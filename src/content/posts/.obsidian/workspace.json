@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "text.md",
+                "file": "tiwat Yes!.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "text"
+              "title": "tiwat Yes!"
             }
           }
         ]
@@ -182,6 +182,9 @@
   },
   "active": "de756e34357a3c34",
   "lastOpenFiles": [
+    "未命名.canvas",
+    "tiwat Yes.md",
+    "未命名.base",
     "text.md",
     "video.md",
     "markdown-extended.md",
