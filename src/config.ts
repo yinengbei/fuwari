@@ -12,8 +12,8 @@ export const siteConfig: SiteConfig = {
 	subtitle: "Tech otakus save the world",
 	lang: "zh_CN",
 	themeColor: {
-		hue: 250,
-		fixed: false,
+		hue: 50,
+		fixed: true,
 	},
 	banner: {
 		enable: true,
@@ -41,27 +41,36 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
-		LinkPreset.About,
+		{
+			name: "MC服务器",
+			url: "https://mc.tiwat.cn/",
+			external: true,
+		},
 		{
 			name: "GitHub",
-			url: "https://github.com/yinengbei/fuwari", // Internal links should not include the base path, as it is automatically added
-			external: true, // Show an external link icon and will open in a new tab
+			url: "https://github.com/yinengbei/fuwari",
+			external: true,
 		},
 	],
 };
 
 export const profileConfig: ProfileConfig = {
 	avatar: "https://imoss.tiwat.cn/2025/12/13/b_15313f6eacd791534499363de72c30ea.webp_t", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
-	name: "提瓦特博客",
+	name: "依依Yiyi",
 	bio: "Tech otakus save the world",
-	links: [
+	  links: [
 		{
-			name: "GitHub",
-			icon: "fa6-brands:github",
-			url: "https://github.com/yinengbei/fuwari",
+		  name: "bilibili",
+		  icon: "fa6-brands:bilibili",
+		  url: "https://space.bilibili.com/473378169",
 		},
-	],
-};
+		{
+		  name: "GitHub2",
+		  icon: "fa6-brands:github",
+		  url: "https://github.com/yinengbei/fuwari",
+		},
+	  ],
+	};
 
 export const licenseConfig: LicenseConfig = {
 	enable: true,
