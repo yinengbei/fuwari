@@ -41,16 +41,11 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
-		{
-			name: "MC服务器",
-			url: "https://mc.tiwat.cn/",
-			external: true,
-		},
-		{
-			name: "GitHub",
-			url: "https://github.com/yinengbei/fuwari",
-			external: true,
-		},
+		//{
+		//	name: "MC服务器",
+		//	url: "https://mc.tiwat.cn/",
+		//	external: true,
+		//},
 	],
 };
 
