@@ -51,13 +51,29 @@ const mainPanelTop = siteConfig.banner.enable
     </div>
 </div>
 
-<!-- Banner -->
-{siteConfig.banner.enable && <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
-    <ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
-                  src={siteConfig.banner.src} position={siteConfig.banner.position}
-    >
+{siteConfig.banner.enable && 
+  <div id="banner-wrapper" 
+       class={`absolute z-10 w-full transition duration-700 overflow-hidden`} 
+       style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
+
+    <!-- Banner 图片 -->
+    <ImageWrapper id="banner" 
+                  alt="Banner image of the blog" 
+                  class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
+                  src={siteConfig.banner.src} 
+                  position={siteConfig.banner.position}>
     </ImageWrapper>
-</div>}
+
+    <!-- 中间亮四周暗遮罩 -->
+    <div class="absolute inset-0 pointer-events-none"
+         style="background: radial-gradient(circle, rgba(0,0,0,0) 50%, rgba(0,0,0,0.25) 100%);"></div>
+
+    <!-- 底部阴影 -->
+    <div class="absolute left-0 right-0 bottom-0 h-16 pointer-events-none"
+         style="background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.3));"></div>
+
+  </div>
+}
 
 <!-- Main content -->
 <div class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
