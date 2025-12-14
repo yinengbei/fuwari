@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tiwat Yes!.md",
+                "file": "teyvat.md",
                 "mode": "source",
-                "source": false
+                "source": true
               },
               "icon": "lucide-file",
-              "title": "tiwat Yes!"
+              "title": "teyvat"
             }
           }
         ]
@@ -182,6 +182,8 @@
   },
   "active": "de756e34357a3c34",
   "lastOpenFiles": [
+    "2025-12-13.md",
+    "teyvat.md",
     "未命名.canvas",
     "tiwat Yes.md",
     "未命名.base",

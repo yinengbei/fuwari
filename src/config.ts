@@ -12,17 +12,17 @@ export const siteConfig: SiteConfig = {
 	subtitle: "Tech otakus save the world",
 	lang: "zh_CN",
 	themeColor: {
-		hue: 50,
+		hue: 250,
 		fixed: true,
 	},
 	banner: {
 		enable: true,
-		src: "assets/images/demo-banner.png",
-		position: "center",
+		src: "https://imoss.tiwat.cn/2025/12/14/f865399ae020306c54e0063e554bbca2259895991.png_t",
+		position: "top",
 		credit: {
-			enable: false,
-			text: "",
-			url: "",
+			enable: true,
+			text: "纯洁的艾玛 ~善良的艾玛 ~乖孩子艾玛~",
+			url: "https://www.bilibili.com/video/BV12aUUBvEc3/",
 		},
 	},
 	toc: {
@@ -65,7 +65,7 @@ export const profileConfig: ProfileConfig = {
 		  url: "https://space.bilibili.com/473378169",
 		},
 		{
-		  name: "GitHub2",
+		  name: "GitHub",
 		  icon: "fa6-brands:github",
 		  url: "https://github.com/yinengbei/fuwari",
 		},
