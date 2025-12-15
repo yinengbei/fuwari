@@ -41,11 +41,11 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
-		//{
-		//	name: "MC服务器",
-		//	url: "https://mc.tiwat.cn/",
-		//	external: true,
-		//},
+		{
+			name: "统计",
+			url: "https://cloud.umami.is/share/zhozs8R1wjjBCMtn",
+			external: true,
+		},
 	],
 };
 
