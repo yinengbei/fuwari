@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "teyvat.md",
+                "file": "eo-netlify.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "teyvat"
+              "title": "eo-netlify"
             }
           }
         ]
@@ -182,8 +182,10 @@
   },
   "active": "de756e34357a3c34",
   "lastOpenFiles": [
-    "2025-12-13.md",
+    "Pasted image 20251218012820.png",
+    "eo-netlify.md",
     "teyvat.md",
+    "2025-12-13.md",
     "未命名.canvas",
     "tiwat Yes.md",
     "未命名.base",
