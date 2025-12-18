@@ -8,7 +8,7 @@ export async function onRequest(context: any) {
   }
 
   try {
-    const KV = env.KV_NAMESPACE;
+    const KV = env.blog;
     const key = `views:${slug}`;
     let current = await KV.get(key);
     let count = current ? parseInt(current, 10) : 0;
