@@ -158,15 +158,12 @@ const jsonLd = {
 </MainGridLayout>
 
 <script is:inline>
-  const slug = document.getElementById("pageviews")?.dataset.slug;
-  if (slug) {
-    fetch(`/api/pageviews?slug=${slug}`)
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("pageviews").innerText = data.views + " 浏览";
-      })
-      .catch(() => {
-        document.getElementById("pageviews").innerText = "浏览量获取失败";
-      });
-  }
+	const slug = document.getElementById("pageviews")?.dataset.slug;
+	if (slug) {
+	  fetch(`/api/pageviews?slug=${slug}`)
+		.then(res => res.json())
+		.then(data => {
+		  document.getElementById("pageviews").innerText = data.views + " 浏览";
+		});
+	}
 </script>
