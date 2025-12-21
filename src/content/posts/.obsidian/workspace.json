@@ -13,30 +13,15 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "eo-netlify.md",
+                "file": "atmsky-1-8-0.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "eo-netlify"
-            }
-          },
-          {
-            "id": "f84923f213fe009c",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Magical-Girl-Witch-Trials.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Magical-Girl-Witch-Trials"
+              "title": "atmsky-1-8-0"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -195,12 +180,16 @@
       "bases:创建新数据库": false
     }
   },
-  "active": "f84923f213fe009c",
+  "active": "de756e34357a3c34",
   "lastOpenFiles": [
-    "Pasted image 20251220220547.png",
-    "Magical-Girl-Witch-Trials.md",
     "eo-netlify.md",
+    "2025-12-18.md",
+    "atmsky-1-8-0.md",
+    "Magical-Girl-Witch-Trials.md",
     "teyvat.md",
+    "Pasted image 20251221235529.png",
+    "Pasted image 20251221235332.png",
+    "Pasted image 20251220220547.png",
     "Pasted image 20251218012820.png",
     "2025-12-13.md",
     "未命名.canvas",
