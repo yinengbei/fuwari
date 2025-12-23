@@ -43,7 +43,7 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Archive,
 		{
 			name: "统计",
-			url: "https://cloud.umami.is/share/zhozs8R1wjjBCMtn",
+			url: "https://umami.tiwat.cn/share/2cwLvW3ViWdd6ANd",
 			external: true,
 		},
 	],
