@@ -1,0 +1,41 @@
+<div
+  id="total-pv-container"
+  class="flex items-center justify-center gap-1 text-xs
+         text-neutral-400 mb-3 opacity-0
+         transition-opacity duration-500"
+>
+  <slot name="icon" />
+  <span>全站访问量</span>
+  <span
+    id="total-pv-count"
+    class="font-bold text-[var(--primary)]"
+  >
+    ...
+  </span>
+</div>
+
+<script client:load>
+  async function updateTotalPV() {
+    const container = document.getElementById('total-pv-container');
+    const countEl = document.getElementById('total-pv-count');
+    if (!container || !countEl) return;
+
+    if (container.dataset.fetched === 'true') return;
+    container.dataset.fetched = 'true';
+
+    try {
+      const res = await fetch('/api/views?id=total');
+      const data = await res.json();
+
+      if (typeof data.visitCount === 'number') {
+        countEl.textContent = data.visitCount.toLocaleString();
+        container.classList.remove('opacity-0');
+      }
+    } catch (e) {
+      console.error('[TotalViews] error:', e);
+      delete container.dataset.fetched;
+    }
+  }
+
+  updateTotalPV();
+</script>

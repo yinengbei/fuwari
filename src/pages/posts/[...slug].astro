@@ -1,4 +1,5 @@
 ---
+import PostViews from "@components/PostViews.astro";
 import path from "node:path";
 import { Icon } from "astro-icon/components";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
@@ -60,6 +61,12 @@ const jsonLd = {
                         {remarkPluginFrontmatter.minutes} {i18n(remarkPluginFrontmatter.minutes === 1 ? I18nKey.minuteCount : I18nKey.minutesCount)}
                     </div>
                 </div>
+				<PostViews>
+					<Icon
+						slot="icon"
+						name="material-symbols:visibility-outline-rounded"
+					/>
+				</PostViews>
             </div>
 
             <div class="relative onload-animation">

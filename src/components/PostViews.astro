@@ -1,0 +1,47 @@
+<div
+  id="post-view-container"
+  class="flex flex-row items-center opacity-0 transition-opacity duration-500"
+>
+  <div
+    class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10
+           text-black/50 dark:text-white/50
+           flex items-center justify-center mr-2"
+  >
+    <slot name="icon" />
+  </div>
+
+  <div class="text-sm">
+    <span id="post-view-count">...</span> 次阅读
+  </div>
+</div>
+
+<script client:load>
+  async function updatePostPV() {
+    if (!location.pathname.includes('/posts/')) return;
+
+    const container = document.getElementById('post-view-container');
+    const countSpan = document.getElementById('post-view-count');
+
+    if (!container || !countSpan) return;
+
+    if (container.dataset.fetched === 'true') return;
+    container.dataset.fetched = 'true';
+
+    try {
+      const res = await fetch(
+        `/api/views?id=${encodeURIComponent(location.pathname)}`
+      );
+      const data = await res.json();
+
+      if (typeof data.visitCount === 'number') {
+        countSpan.textContent = data.visitCount.toLocaleString();
+        container.classList.remove('opacity-0');
+      }
+    } catch (err) {
+      console.error('[PostViews] fetch failed:', err);
+      delete container.dataset.fetched;
+    }
+  }
+
+  updatePostPV();
+</script>
