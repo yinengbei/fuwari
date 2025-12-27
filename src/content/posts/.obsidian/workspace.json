@@ -20,8 +20,23 @@
               "icon": "lucide-file",
               "title": "atmsky-1-8-0"
             }
+          },
+          {
+            "id": "d402b07b78a28ed0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "article-and-home-pv.md",
+                "mode": "source",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "article-and-home-pv"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -180,13 +195,14 @@
       "bases:创建新数据库": false
     }
   },
-  "active": "de756e34357a3c34",
+  "active": "d402b07b78a28ed0",
   "lastOpenFiles": [
+    "atmsky-1-8-0.md",
+    "article-and-home-pv.md",
+    "teyvat.md",
     "eo-netlify.md",
     "2025-12-18.md",
-    "atmsky-1-8-0.md",
     "Magical-Girl-Witch-Trials.md",
-    "teyvat.md",
     "Pasted image 20251221235529.png",
     "Pasted image 20251221235332.png",
     "Pasted image 20251220220547.png",

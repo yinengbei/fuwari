@@ -2,7 +2,6 @@ export async function onRequest({ request, params, env }) {
     const url = new URL(request.url);
     const id = url.searchParams.get('id');
 
-    // 必须带有 id 参数
     if (!id) {
         return new Response(JSON.stringify({ error: "Missing 'id' parameter" }), {
             status: 400,
