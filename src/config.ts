@@ -20,7 +20,7 @@ export const siteConfig: SiteConfig = {
 		src: "https://imoss.tiwat.cn/2025/12/14/f865399ae020306c54e0063e554bbca2259895991.png_b",
 		position: "top",
 		credit: {
-			enable: true,
+			enable: false,
 			text: "纯洁的艾玛 ~善良的艾玛 ~乖孩子艾玛~",
 			url: "https://www.bilibili.com/video/BV12aUUBvEc3/",
 		},
