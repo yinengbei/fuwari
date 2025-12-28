@@ -6,14 +6,16 @@ export async function onRequestGet(context) {
   const FALLBACK_IMAGE =
     "https://imoss.tiwat.cn/2025/12/14/f865399ae020306c54e0063e554bbca2259895991.png_b";
 
-  const cacheHeaders = {
-    "Cache-Control":
-      "public, max-age=0, s-maxage=10, stale-while-revalidate=30",
+  const noCacheHeaders = {
+    "Cache-Control": "no-store, no-cache, must-revalidate",
+    "Pragma": "no-cache",
+    "Expires": "0",
   };
 
   if (!API_TOKEN) {
+    console.error("Missing LSKY_TOKEN environment variable");
     return Response.redirect(FALLBACK_IMAGE, 307, {
-      headers: cacheHeaders,
+      headers: noCacheHeaders,
     });
   }
 
@@ -21,6 +23,7 @@ export async function onRequestGet(context) {
     const res = await fetch(`${LSKY_API_URL}?format=url`, {
       headers: {
         "Authorization": `Bearer ${API_TOKEN}`,
+        "Accept": "application/json",
       },
     });
 
@@ -31,15 +34,17 @@ export async function onRequestGet(context) {
     const targetUrl = (await res.text()).trim();
 
     if (!targetUrl.startsWith("http")) {
-      throw new Error("Invalid URL");
+      throw new Error("Invalid URL received");
     }
 
     return Response.redirect(targetUrl, 307, {
-      headers: cacheHeaders,
+      headers: noCacheHeaders,
     });
-  } catch (e) {
+
+  } catch (error) {
+    console.error("Fetch Random Image Failed:", error);
     return Response.redirect(FALLBACK_IMAGE, 307, {
-      headers: cacheHeaders,
+      headers: noCacheHeaders,
     });
   }
 }
