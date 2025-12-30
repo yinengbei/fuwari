@@ -113,7 +113,9 @@
 }
 
 .custom-md img, #post-cover img {
-    @apply cursor-zoom-in
+    @apply cursor-zoom-in;
+	max-height: 60vh;
+    height: auto;
 }
 
 ::selection {
