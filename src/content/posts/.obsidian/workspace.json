@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "article-and-home-pv.md",
+                "file": "teyvat.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "article-and-home-pv"
+              "title": "teyvat"
             }
           }
         ],
@@ -197,8 +197,8 @@
   },
   "active": "d402b07b78a28ed0",
   "lastOpenFiles": [
-    "atmsky-1-8-0.md",
     "article-and-home-pv.md",
+    "atmsky-1-8-0.md",
     "teyvat.md",
     "eo-netlify.md",
     "2025-12-18.md",
