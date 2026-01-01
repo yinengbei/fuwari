@@ -182,7 +182,7 @@ const bannerOffset =
 		@apply translate-y-[var(--banner-height-extend)];
 	}
 	.enable-banner #top-row {
-		@apply h-[calc(var(--banner-height-home)_-_4.5rem)] transition-all duration-300
+		@apply h-[calc(var(--banner-height-home)_-_4.5rem)] transition-[height] duration-200
 	}
 	.enable-banner.is-home #sidebar-sticky {
 		@apply top-[calc(1rem_-_var(--banner-height-extend))]
@@ -405,9 +405,24 @@ const setup = () => {
 	})
 	window.swup.hooks.on('content:replace', initCustomScrollbar)
 	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
-		try {
-			window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-		} catch {
+		const startScroll = window.pageYOffset || document.documentElement.scrollTop;
+		if (startScroll > 0) {
+			const scrollDuration = Math.min(150, startScroll / 3);
+			const startTime = performance.now();
+			const scrollToTop = (currentTime: number) => {
+				const elapsed = currentTime - startTime;
+				const progress = Math.min(elapsed / scrollDuration, 1);
+				const easeOut = 1 - Math.pow(1 - progress, 3);
+				const currentScroll = startScroll * (1 - easeOut);
+				window.scrollTo(0, currentScroll);
+				if (progress < 1) {
+					requestAnimationFrame(scrollToTop);
+				} else {
+					window.scrollTo(0, 0);
+				}
+			};
+			requestAnimationFrame(scrollToTop);
+		} else {
 			window.scrollTo(0, 0);
 		}
 
@@ -418,7 +433,6 @@ const setup = () => {
 			bodyElement!.classList.remove('lg:is-home');
 		}
 
-		// Hide the TOC while scrolling back to top
 		let toc = document.getElementById('toc-wrapper');
 		if (toc) {
 			toc.classList.add('toc-not-ready')
