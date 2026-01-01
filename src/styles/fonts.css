@@ -1,0 +1,9 @@
+/* Font loading optimization */
+/* 
+ * Note: font-display: swap is automatically added to all @font-face rules
+ * by the PostCSS plugin (postcss-font-display.mjs) during build.
+ * This ensures fonts use swap strategy to avoid FOIT (Flash of Invisible Text).
+ * 
+ * The actual font definitions are imported from @fontsource in Layout.astro.
+ */
+
