@@ -102,7 +102,7 @@ const { remarkPluginFrontmatter } = await entry.render();
       <div class="absolute pointer-events-none z-20 w-full h-full flex items-center justify-center">
         <Icon name="material-symbols:chevron-right-rounded" class="transition opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 text-white text-4xl md:text-5xl"/>
       </div>
-      <ImageWrapper src={image} basePath={path.join("content/posts/", getDir(entry.id))} alt="Cover Image of the Post" class="w-full h-full"/>
+      <ImageWrapper src={image} basePath={path.join("content/posts/", getDir(entry.id))} alt="Cover Image of the Post" class="w-full h-full" loading="lazy" sizes="(max-width: 640px) 100px, (max-width: 1024px) 112px, 28vw"/>
     </a>
   }
 

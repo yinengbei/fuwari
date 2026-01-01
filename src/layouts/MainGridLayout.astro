@@ -59,7 +59,12 @@ const mainPanelTop = siteConfig.banner.enable
                   alt="Banner image of the blog" 
                   class:list={["object-cover h-full transition duration-700 opacity-0 scale-105 animation-optimized"]}
                   src={siteConfig.banner.src} 
-                  position={siteConfig.banner.position}>
+                  position={siteConfig.banner.position}
+                  loading="eager"
+                  fetchpriority="high"
+                  preload={true}
+                  sizes="100vw"
+                  widths={[640, 1024, 1920, 2560]}>
     </ImageWrapper>
     <div class="absolute inset-0 pointer-events-none"
          style="background: radial-gradient(circle, rgba(0,0,0,0) 50%, rgba(0,0,0,0.25) 100%);"></div>

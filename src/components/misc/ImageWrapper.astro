@@ -8,12 +8,28 @@ interface Props {
 	alt?: string;
 	position?: string;
 	basePath?: string;
+	loading?: "lazy" | "eager";
+	fetchpriority?: "high" | "low" | "auto";
+	preload?: boolean;
+	widths?: number[];
+	sizes?: string;
 }
 
-import { Image } from "astro:assets";
+import { Image, getImage } from "astro:assets";
 import { url } from "../../utils/url-utils";
 
-const { id, src, alt, position = "center", basePath = "/" } = Astro.props;
+const { 
+	id, 
+	src, 
+	alt, 
+	position = "center", 
+	basePath = "/",
+	loading = "lazy",
+	fetchpriority = "auto",
+	preload = false,
+	widths = [640, 1024, 1920],
+	sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+} = Astro.props;
 const className = Astro.props.class;
 
 const isLocal = !(
@@ -27,7 +43,9 @@ const isPublic = src.startsWith("/");
 // TODO temporary workaround for images dynamic import
 // https://github.com/withastro/astro/issues/3373
 // biome-ignore lint/suspicious/noImplicitAnyLet: <check later>
-let img;
+let img: ImageMetadata | undefined;
+let preloadSrc: string | undefined;
+
 if (isLocal) {
 	const files = import.meta.glob<ImageMetadata>("../../**", {
 		import: "default",
@@ -40,15 +58,45 @@ if (isLocal) {
 		console.error(
 			`\n[ERROR] Image file not found: ${normalizedPath.replace("../../", "src/")}`,
 		);
+	} else {
+		img = await file();
+		
+		// Generate preload source for critical images
+		if (preload && img) {
+			const optimizedImg = await getImage({ src: img, width: widths[1] || 1024 });
+			preloadSrc = optimizedImg.src;
+		}
 	}
-	img = await file();
 }
 
 const imageClass = "w-full h-full object-cover";
 const imageStyle = `object-position: ${position}`;
 ---
+{preload && preloadSrc && (
+	<link rel="preload" as="image" href={preloadSrc} fetchpriority={fetchpriority} />
+)}
 <div id={id} class:list={[className, 'overflow-hidden relative']}>
     <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
-    {isLocal && img && <Image src={img} alt={alt || ""} class={imageClass} style={imageStyle}/>}
-    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle}/>}
+    {isLocal && img && (
+		<Image 
+			src={img} 
+			alt={alt || ""} 
+			class={imageClass} 
+			style={imageStyle}
+			loading={loading}
+			fetchpriority={fetchpriority}
+			widths={widths}
+			sizes={sizes}
+		/>
+	)}
+    {!isLocal && (
+		<img 
+			src={isPublic ? url(src) : src} 
+			alt={alt || ""} 
+			class={imageClass} 
+			style={imageStyle}
+			loading={loading}
+			fetchpriority={fetchpriority}
+		/>
+	)}
 </div>
