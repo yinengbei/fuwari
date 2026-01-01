@@ -27,7 +27,6 @@ export async function onRequest({ request }) {
 		});
 	}
 
-	// 获取当前浏览量
 	let count = 0;
 	try {
 		const v = await blog.get(viewKey);
@@ -37,7 +36,6 @@ export async function onRequest({ request }) {
 		count = 0;
 	}
 
-	// 只有 action=increment 时才增加浏览量
 	if (action === "increment") {
 		try {
 			count += 1;

@@ -456,16 +456,29 @@ if (window?.swup?.hooks) {
 }
 
 let backToTopBtn = document.getElementById('back-to-top-btn');
+let goToBottomBtn = document.getElementById('go-to-bottom-btn');
 let toc = document.getElementById('toc-wrapper');
 let navbar = document.getElementById('navbar-wrapper')
 function scrollFunction() {
 	let bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100)
+	const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+	const scrollHeight = document.documentElement.scrollHeight;
+	const clientHeight = document.documentElement.clientHeight;
+	const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100; 
 
 	if (backToTopBtn) {
-		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
+		if (scrollTop > bannerHeight) {
 			backToTopBtn.classList.remove('hide')
 		} else {
 			backToTopBtn.classList.add('hide')
+		}
+	}
+
+	if (goToBottomBtn) {
+		if (isNearBottom) {
+			goToBottomBtn.classList.add('hide')
+		} else {
+			goToBottomBtn.classList.remove('hide')
 		}
 	}
 
