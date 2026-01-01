@@ -1,0 +1,100 @@
+---
+---
+
+<div id="install-prompt" class="fixed bottom-4 left-4 z-50 hidden">
+	<div class="card-base p-4 shadow-lg max-w-sm">
+		<div class="flex items-start gap-3">
+			<div class="flex-1">
+				<h3 class="font-bold text-lg mb-1">安装应用</h3>
+				<p class="text-sm text-black/75 dark:text-white/75 mb-3">
+					将此博客添加到主屏幕，获得更好的体验
+				</p>
+				<div class="flex gap-2">
+					<button id="install-button" class="btn-regular px-4 py-2 text-sm">
+						安装
+					</button>
+					<button id="dismiss-install" class="btn-plain px-4 py-2 text-sm">
+						稍后
+					</button>
+				</div>
+			</div>
+			<button id="close-install-prompt" class="btn-plain w-8 h-8 rounded-lg flex-shrink-0">
+				<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<line x1="18" y1="6" x2="6" y2="18"></line>
+					<line x1="6" y1="6" x2="18" y2="18"></line>
+				</svg>
+			</button>
+		</div>
+	</div>
+</div>
+
+<script is:inline>
+(function() {
+	if (typeof window === 'undefined') return;
+	
+	let deferredPrompt = null;
+	const installPrompt = document.getElementById('install-prompt');
+	const installButton = document.getElementById('install-button');
+	const dismissButton = document.getElementById('dismiss-install');
+	const closeButton = document.getElementById('close-install-prompt');
+	
+	if (!installPrompt || !installButton || !dismissButton || !closeButton) return;
+	
+	// Check if already installed
+	if (window.matchMedia('(display-mode: standalone)').matches || 
+		(window.navigator.standalone === true)) {
+		return;
+	}
+	
+	// Check if user has dismissed before
+	const dismissed = localStorage.getItem('install-prompt-dismissed');
+	if (dismissed) {
+		const dismissedTime = parseInt(dismissed, 10);
+		const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
+		if (daysSinceDismissed < 7) {
+			return;
+		}
+	}
+	
+	// Listen for beforeinstallprompt event
+	window.addEventListener('beforeinstallprompt', (e) => {
+		e.preventDefault();
+		deferredPrompt = e;
+		
+		// Show prompt after a delay
+		setTimeout(() => {
+			installPrompt.classList.remove('hidden');
+		}, 3000);
+	});
+	
+	// Install button click
+	installButton.addEventListener('click', async () => {
+		if (!deferredPrompt) return;
+		
+		deferredPrompt.prompt();
+		const choiceResult = await deferredPrompt.userChoice;
+		
+		if (choiceResult.outcome === 'accepted') {
+			console.log('User accepted the install prompt');
+		} else {
+			console.log('User dismissed the install prompt');
+		}
+		
+		deferredPrompt = null;
+		installPrompt.classList.add('hidden');
+	});
+	
+	// Dismiss button click
+	dismissButton.addEventListener('click', () => {
+		localStorage.setItem('install-prompt-dismissed', Date.now().toString());
+		installPrompt.classList.add('hidden');
+	});
+	
+	// Close button click
+	closeButton.addEventListener('click', () => {
+		localStorage.setItem('install-prompt-dismissed', Date.now().toString());
+		installPrompt.classList.add('hidden');
+	});
+})();
+</script>
+

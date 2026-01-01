@@ -31,9 +31,8 @@ export const siteConfig: SiteConfig = {
 	},
 	favicon: [
 		{
-			src: "https://mc.tiwat.cn/images/tap_blue_white.png",
-			theme: "light",
-			sizes: "32x32",
+			src: "/favicon/favicon.png",
+			sizes: "any",
 		},
 	],
 };

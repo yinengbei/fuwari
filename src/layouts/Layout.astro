@@ -5,6 +5,7 @@ import "@fontsource/roboto/700.css";
 import "../styles/fonts.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
+import InstallPrompt from "@components/misc/InstallPrompt.astro";
 import { profileConfig, siteConfig } from "@/config";
 import {
 	AUTO_MODE,
@@ -100,15 +101,25 @@ const bannerOffset =
 		<meta name="twitter:title" content={pageTitle}>
 		<meta name="twitter:description" content={description || pageTitle}>
 
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 		<meta name="generator" content={Astro.generator} />
+		<meta name="theme-color" content="oklch(0.70 0.14 250)" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+		<meta name="apple-mobile-web-app-title" content={siteConfig.title} />
 		{favicons.map(favicon => (
 			<link rel="icon"
 				  href={favicon.src.startsWith('/') ? url(favicon.src) : favicon.src}
-				  sizes={favicon.sizes}
-				  media={favicon.theme && `(prefers-color-scheme: ${favicon.theme})`}
+				  sizes={favicon.sizes || "any"}
+				  {...(favicon.theme ? { media: `(prefers-color-scheme: ${favicon.theme})` } : {})}
 			/>
 		))}
+		
+		<!-- PWA Manifest -->
+		<link rel="manifest" href={url('/manifest.json')} />
+		
+		<!-- Apple Touch Icon -->
+		<link rel="apple-touch-icon" href={url('/favicon/favicon.png')} />
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
 		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
@@ -196,6 +207,7 @@ const bannerOffset =
 		  data-overlayscrollbars-initialize
 	>
 		<ConfigCarrier></ConfigCarrier>
+		<InstallPrompt></InstallPrompt>
 		<slot />
 	</body>
 </html>
@@ -418,6 +430,33 @@ function cleanupAnimationWillChange() {
 	});
 }
 
+function registerServiceWorker() {
+	if ('serviceWorker' in navigator) {
+		window.addEventListener('load', () => {
+			navigator.serviceWorker.register('/sw.js')
+				.then((registration) => {
+					console.log('Service Worker registered:', registration.scope);
+					
+					// Check for updates
+					registration.addEventListener('updatefound', () => {
+						const newWorker = registration.installing;
+						if (newWorker) {
+							newWorker.addEventListener('statechange', () => {
+								if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+									// New service worker available, notify user
+									console.log('New service worker available');
+								}
+							});
+						}
+					});
+				})
+				.catch((error) => {
+					console.error('Service Worker registration failed:', error);
+				});
+		});
+	}
+}
+
 function init() {
 	// disableAnimation()()		// TODO
 	loadTheme();
@@ -425,6 +464,7 @@ function init() {
 	initCustomScrollbar();
 	showBanner();
 	cleanupAnimationWillChange();
+	registerServiceWorker();
 }
 
 /* Load settings when entering the site */
