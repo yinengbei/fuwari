@@ -1,6 +1,7 @@
-# 关于 [依依Yiyi]
-一个普普通通的人，喜欢折腾而已
-在这里分享一些有趣的事情
+# 关于这个网站
+致力于轻量快速，追求魔改 [Fuwari](https://github.com/saicaca/fuwari) 的同时，首次加载网络传输1mb，后续加载仅需5kb
+
+*网站采用国内外EdgeOne+CloudFlare分流模式*
 
 **以下是此博客源码**
 ::github{repo="yinengbei/fuwari"}

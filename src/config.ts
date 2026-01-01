@@ -36,10 +36,15 @@ export const siteConfig: SiteConfig = {
 			sizes: "32x32",
 		},
 	],
-}; 
+};
 export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
+		{
+			name: "分类",
+			url: "/categories/",
+			external: false,
+		},
 		LinkPreset.Archive,
 		{
 			name: "友链",
@@ -55,27 +60,28 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "https://imoss.tiwat.cn/2025/12/13/b_15313f6eacd791534499363de72c30ea.webp_t", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+	avatar:
+		"https://imoss.tiwat.cn/2025/12/13/b_15313f6eacd791534499363de72c30ea.webp_t", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "依依Yiyi",
 	bio: "Tech otakus save the world",
-	  links: [
+	links: [
 		{
-		  name: "bilibili",
-		  icon: "fa6-brands:bilibili",
-		  url: "https://space.bilibili.com/473378169",
+			name: "bilibili",
+			icon: "fa6-brands:bilibili",
+			url: "https://space.bilibili.com/473378169",
 		},
 		{
-		  name: "qq",
-		  icon: "fa6-brands:qq",
-		  url: "https://qm.qq.com/q/rui4WwjANG?from=qq",
+			name: "qq",
+			icon: "fa6-brands:qq",
+			url: "https://qm.qq.com/q/rui4WwjANG?from=qq",
 		},
 		{
-		  name: "GitHub",
-		  icon: "fa6-brands:github",
-		  url: "https://github.com/yinengbei/fuwari",
+			name: "GitHub",
+			icon: "fa6-brands:github",
+			url: "https://github.com/yinengbei/fuwari",
 		},
-	  ],
-	};
+	],
+};
 
 export const licenseConfig: LicenseConfig = {
 	enable: true,

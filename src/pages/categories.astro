@@ -1,0 +1,154 @@
+---
+import { getCollection } from "astro:content";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { Icon } from "astro-icon/components";
+import { getCategoryList } from "../utils/content-utils";
+
+const categories = await getCategoryList();
+const totalPosts = (
+	await getCollection("posts", ({ data }) => {
+		return import.meta.env.PROD ? data.draft !== true : true;
+	})
+).length;
+
+const sortedCategories = [...categories].sort((a, b) => b.count - a.count);
+---
+
+<MainGridLayout title="分类" description="文章分类">
+    <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
+        <div class="card-base px-9 py-6 relative w-full">
+            <div class="flex items-center mb-6">
+                <Icon name="material-symbols:book-2-outline-rounded" class="text-4xl text-[var(--primary)] mr-3" />
+                <h1 class="text-3xl font-bold text-black/90 dark:text-white/90">分类</h1>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4 mb-8 text-sm text-black/60 dark:text-white/60">
+                <div class="flex items-center gap-2">
+                    <Icon name="material-symbols:folder-outline-rounded" class="text-lg" />
+                    <span>共 <span class="font-semibold text-[var(--primary)]">{categories.length}</span> 个分类</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <Icon name="material-symbols:article-outline-rounded" class="text-lg" />
+                    <span>共 <span class="font-semibold text-[var(--primary)]">{totalPosts}</span> 篇文章</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {sortedCategories.map((category) => (
+                    <a 
+                        href={category.url} 
+                        class="category-card group"
+                        aria-label={`查看 ${category.name} 分类下的所有文章`}
+                    >
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-2 flex-1 min-w-0">
+                                <div class="category-icon">
+                                    <Icon name="material-symbols:folder-outline-rounded" class="text-xl" />
+                                </div>
+                                <h2 class="text-lg font-bold text-black/90 dark:text-white/90 truncate group-hover:text-[var(--primary)] transition-colors duration-300">
+                                    {category.name}
+                                </h2>
+                            </div>
+                            <div class="category-badge">
+                                {category.count}
+                            </div>
+                        </div>
+                        <div class="category-count flex items-center text-xs text-black/50 dark:text-white/50">
+                            <Icon name="material-symbols:article-outline-rounded" class="text-sm mr-1" />
+                            <span>{category.count} 篇文章</span>
+                        </div>
+                    </a>
+                ))}
+            </div>
+        </div>
+    </div>
+</MainGridLayout>
+
+<style>
+    .category-card {
+        @apply flex flex-col p-4 rounded-xl bg-[var(--card-bg)] border border-black/10 dark:border-white/10 
+               hover:shadow-md transition-all duration-300;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+    
+    .category-card:hover {
+        border-color: var(--primary);
+        background-color: var(--btn-plain-bg-hover);
+    }
+    
+    .category-card:active {
+        transform: scale(0.98);
+        background-color: var(--btn-regular-bg-active);
+    }
+    
+    .category-icon {
+        @apply flex-shrink-0 w-8 h-8 rounded-lg text-[var(--primary)] 
+               flex items-center justify-center transition-all duration-300;
+        position: relative;
+    }
+    
+    .category-icon::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 0.5rem;
+        background-color: var(--primary);
+        opacity: 0.1;
+        transition: opacity 0.3s;
+        z-index: 0;
+    }
+    
+    .category-icon > * {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .category-card:hover .category-icon::before {
+        opacity: 0.15;
+    }
+    
+    .category-card:hover .category-icon {
+        @apply text-[var(--primary)] scale-110;
+    }
+    
+    .category-badge {
+        @apply flex-shrink-0 px-2.5 py-1 rounded-lg text-sm font-bold text-[var(--primary)]
+               dark:bg-[var(--primary)] dark:text-black/70 transition-all duration-300;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .category-badge::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 0.5rem;
+        background-color: var(--primary);
+        opacity: 0.1;
+        transition: opacity 0.3s;
+        z-index: 0;
+    }
+    
+    .category-card:hover .category-badge::before {
+        opacity: 0.15;
+    }
+    
+    .category-card:hover .category-badge {
+        @apply text-[var(--primary)] scale-105;
+    }
+    
+    .category-count {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .category-card:hover .category-count {
+        @apply text-black/80 dark:text-white/80;
+    }
+    
+    .category-card:hover .category-count > * {
+        @apply text-black/80 dark:text-white/80;
+    }
+</style>
+
