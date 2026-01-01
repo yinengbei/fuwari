@@ -104,37 +104,62 @@ loadButtonScript();
 </script>
 
 {import.meta.env.PROD && <script is:inline define:vars={{scriptUrl: url('/pagefind/pagefind.js')}}>
-async function loadPagefind() {
-    try {
-        const response = await fetch(scriptUrl, { method: 'HEAD' });
-        if (!response.ok) {
-            throw new Error(`Pagefind script not found: ${response.status}`);
+// Optimized Pagefind loading: delay until needed or after page load
+(function() {
+    let pagefindLoaded = false;
+    let pagefindLoading = false;
+    
+    async function loadPagefind() {
+        if (pagefindLoaded || pagefindLoading) return;
+        pagefindLoading = true;
+        
+        try {
+            const response = await fetch(scriptUrl, { method: 'HEAD' });
+            if (!response.ok) {
+                throw new Error(`Pagefind script not found: ${response.status}`);
+            }
+
+            const pagefind = await import(scriptUrl);
+
+            await pagefind.options({
+                excerptLength: 20
+            });
+
+            window.pagefind = pagefind;
+            pagefindLoaded = true;
+
+            document.dispatchEvent(new CustomEvent('pagefindready'));
+        } catch (error) {
+            console.error('Failed to load Pagefind:', error);
+            window.pagefind = {
+                search: () => Promise.resolve({ results: [] }),
+                options: () => Promise.resolve(),
+            };
+            document.dispatchEvent(new CustomEvent('pagefindloaderror'));
+        } finally {
+            pagefindLoading = false;
         }
-
-        const pagefind = await import(scriptUrl);
-
-        await pagefind.options({
-            excerptLength: 20
-        });
-
-        window.pagefind = pagefind;
-
-        document.dispatchEvent(new CustomEvent('pagefindready'));
-        console.log('Pagefind loaded and initialized successfully, event dispatched.');
-    } catch (error) {
-        console.error('Failed to load Pagefind:', error);
-        window.pagefind = {
-            search: () => Promise.resolve({ results: [] }),
-            options: () => Promise.resolve(),
-        };
-        document.dispatchEvent(new CustomEvent('pagefindloaderror'));
-        console.log('Pagefind load error, event dispatched.');
     }
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadPagefind);
-} else {
-    loadPagefind();
-}
+    
+    // Load when search input is focused or clicked
+    function loadOnSearchInteraction() {
+        const searchInputs = document.querySelectorAll('#search-bar input, #search-switch');
+        searchInputs.forEach(input => {
+            input.addEventListener('focus', loadPagefind, { once: true, passive: true });
+            input.addEventListener('click', loadPagefind, { once: true, passive: true });
+        });
+    }
+    
+    // Load after page is fully loaded (with delay)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOnSearchInteraction();
+            // Delay loading Pagefind until after critical resources
+            setTimeout(loadPagefind, 2000);
+        });
+    } else {
+        loadOnSearchInteraction();
+        setTimeout(loadPagefind, 2000);
+    }
+})();
 </script>}

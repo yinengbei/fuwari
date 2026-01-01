@@ -146,8 +146,49 @@ const bannerOffset =
 
 		<slot name="head"></slot>
 
-		<script defer src="https://umami.tiwat.cn/script.js"
-				data-website-id="bc649744-c75f-4772-9c9e-5801448df5c1"></script>
+		<!-- Preconnect to Umami analytics for faster connection -->
+		<link rel="preconnect" href="https://umami.tiwat.cn" crossorigin="anonymous" />
+		<link rel="dns-prefetch" href="https://umami.tiwat.cn" />
+
+		<!-- Preconnect to Giscus for faster connection -->
+		<link rel="preconnect" href="https://giscus.app" crossorigin="anonymous" />
+		<link rel="dns-prefetch" href="https://giscus.app" />
+
+		<!-- Umami analytics - Load after user interaction or page load -->
+		<script is:inline>
+			// Delay loading Umami analytics until after page load or user interaction
+			(function() {
+				let umamiLoaded = false;
+				
+				function loadUmami() {
+					if (umamiLoaded) return;
+					umamiLoaded = true;
+					
+					const script = document.createElement('script');
+					script.defer = true;
+					script.src = 'https://umami.tiwat.cn/script.js';
+					script.setAttribute('data-website-id', 'bc649744-c75f-4772-9c9e-5801448df5c1');
+					script.crossOrigin = 'anonymous';
+					document.head.appendChild(script);
+				}
+				
+				// Load after page is fully loaded
+				if (document.readyState === 'complete') {
+					setTimeout(loadUmami, 1000);
+				} else {
+					window.addEventListener('load', () => {
+						setTimeout(loadUmami, 1000);
+					});
+				}
+				
+				// Load immediately on user interaction (click, scroll, keypress)
+				const events = ['click', 'scroll', 'keydown', 'touchstart'];
+				events.forEach(event => {
+					document.addEventListener(event, loadUmami, { once: true, passive: true });
+				});
+			})();
+		</script>
+
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
 
 	</head>

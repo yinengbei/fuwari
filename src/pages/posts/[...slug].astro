@@ -100,21 +100,62 @@ const jsonLd = {
             }
 
             <div class="giscus-container mb-6">
-                <script src="https://giscus.app/client.js"
-                    data-repo="yinengbei/comment"
-                    data-repo-id="R_kgDOQoIdNw"
-                    data-category="Announcements"
-                    data-category-id="DIC_kwDOQoIdN84Czvhk"
-                    data-mapping="pathname"
-                    data-strict="0"
-                    data-reactions-enabled="1"
-                    data-emit-metadata="0"
-                    data-input-position="top"
-                    data-theme="preferred_color_scheme"
-                    data-lang="zh-CN"
-                    data-loading="lazy"
-                    crossorigin="anonymous"
-                    async>
+                <script is:inline>
+                    // Optimized Giscus loading: load when comment section is visible
+                    (function() {
+                        let giscusLoaded = false;
+                        
+                        function loadGiscus() {
+                            if (giscusLoaded) return;
+                            giscusLoaded = true;
+                            
+                            const script = document.createElement('script');
+                            script.src = 'https://giscus.app/client.js';
+                            script.setAttribute('data-repo', 'yinengbei/comment');
+                            script.setAttribute('data-repo-id', 'R_kgDOQoIdNw');
+                            script.setAttribute('data-category', 'Announcements');
+                            script.setAttribute('data-category-id', 'DIC_kwDOQoIdN84Czvhk');
+                            script.setAttribute('data-mapping', 'pathname');
+                            script.setAttribute('data-strict', '0');
+                            script.setAttribute('data-reactions-enabled', '1');
+                            script.setAttribute('data-emit-metadata', '0');
+                            script.setAttribute('data-input-position', 'top');
+                            script.setAttribute('data-theme', 'preferred_color_scheme');
+                            script.setAttribute('data-lang', 'zh-CN');
+                            script.setAttribute('data-loading', 'lazy');
+                            script.crossOrigin = 'anonymous';
+                            script.async = true;
+                            
+                            const container = document.querySelector('.giscus-container');
+                            if (container) {
+                                container.appendChild(script);
+                            }
+                        }
+                        
+                        // Load when comment section is near viewport
+                        const observer = new IntersectionObserver((entries) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    loadGiscus();
+                                    observer.disconnect();
+                                }
+                            });
+                        }, { rootMargin: '200px' });
+                        
+                        const container = document.querySelector('.giscus-container');
+                        if (container) {
+                            observer.observe(container);
+                        } else {
+                            // Fallback: load after page load
+                            if (document.readyState === 'complete') {
+                                setTimeout(loadGiscus, 1000);
+                            } else {
+                                window.addEventListener('load', () => {
+                                    setTimeout(loadGiscus, 1000);
+                                });
+                            }
+                        }
+                    })();
                 </script>
             </div>
         </div>
