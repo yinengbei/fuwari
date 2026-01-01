@@ -1,23 +1,44 @@
 /* Page transition animations with Swup */
 html.is-changing .transition-swup-fade {
     transition-property: opacity, transform;
-    transition-duration: 300ms;
+    transition-duration: 250ms;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     will-change: opacity, transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
 }
 html.is-animating .transition-swup-fade {
     opacity: 0;
-    transform: translate3d(0, 1rem, 0);
+    transform: translate3d(0, 0.75rem, 0);
+}
+html:not(.is-changing):not(.is-animating) .transition-swup-fade {
+    will-change: auto;
+}
+
+@media (max-width: 1023px) {
+    .sidebar-transition {
+        transition-property: opacity, visibility;
+        transition-duration: 200ms;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html.is-changing .sidebar-transition,
+    html.is-animating .sidebar-transition {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
 }
 
 /* Fade-in animations for components */
 @keyframes fade-in-up {
     0% {
-        transform: translate3d(0, 2rem, 0);
+        transform: translate3d(0, 2rem, 0) translateZ(0);
         opacity: 0;
     }
     100% {
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0) translateZ(0);
         opacity: 1;
     }
 }
@@ -25,15 +46,43 @@ html.is-animating .transition-swup-fade {
 /* Main components */
 .onload-animation {
     opacity: 0;
-    animation: 300ms fade-in-up;
+    animation: 250ms fade-in-up cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
     will-change: opacity, transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+.onload-animation:not([style*="animation-delay"]) {
+    animation-fill-mode: forwards;
+}
+.onload-animation.animation-complete {
+    will-change: auto;
+}
+
+.gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.animation-optimized {
+    will-change: opacity, transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+html.is-changing .animation-optimized,
+html.is-animating .animation-optimized {
+    will-change: opacity, transform;
+}
+
+html:not(.is-changing):not(.is-animating) .animation-optimized {
+    will-change: auto;
 }
 #navbar {
     animation-delay: 0ms
 }
 #sidebar {
-    animation-delay: 100ms
+    animation-delay: 50ms
 }
 #swup-container {
     outline: none;
@@ -42,17 +91,16 @@ html.is-animating .transition-swup-fade {
     animation-delay: var(--content-delay);
 }
 .footer {
-    animation-delay: 250ms;
+    animation-delay: 150ms;
 }
 #banner-credit {
-    animation-delay: 400ms;
+    animation-delay: 250ms;
 }
 
-/* Post content */
 #post-container :nth-child(1) { animation-delay: calc(var(--content-delay) + 0ms) }
-#post-container :nth-child(2) { animation-delay: calc(var(--content-delay) + 50ms) }
-#post-container :nth-child(3) { animation-delay: calc(var(--content-delay) + 100ms) }
-#post-container :nth-child(4) { animation-delay: calc(var(--content-delay) + 175ms) }
-#post-container :nth-child(5) { animation-delay: calc(var(--content-delay) + 250ms) }
-#post-container :nth-child(6) { animation-delay: calc(var(--content-delay) + 325ms) }
+#post-container :nth-child(2) { animation-delay: calc(var(--content-delay) + 40ms) }
+#post-container :nth-child(3) { animation-delay: calc(var(--content-delay) + 80ms) }
+#post-container :nth-child(4) { animation-delay: calc(var(--content-delay) + 120ms) }
+#post-container :nth-child(5) { animation-delay: calc(var(--content-delay) + 160ms) }
+#post-container :nth-child(6) { animation-delay: calc(var(--content-delay) + 200ms) }
 

@@ -45,19 +45,19 @@ const mainPanelTop = siteConfig.banner.enable
 
 <!-- Navbar -->
 <slot slot="head" name="head"></slot>
-<div id="top-row" class="z-50 pointer-events-none relative transition-[transform] duration-500 max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
-    <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-[opacity,transform] duration-200">
+<div id="top-row" class="z-50 pointer-events-none relative transition-[transform] duration-500 max-w-[var(--page-width)] px-0 md:px-4 mx-auto gpu-accelerated" style="will-change: transform;" class:list={[""]}>
+    <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-[opacity,transform] duration-200 animation-optimized">
         <Navbar></Navbar>
     </div>
 </div>
 
 {siteConfig.banner.enable && 
   <div id="banner-wrapper" 
-       class={`absolute z-10 w-full transition duration-700 overflow-hidden`} 
-       style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
+       class={`absolute z-10 w-full transition duration-700 overflow-hidden gpu-accelerated`} 
+       style={`top: -${BANNER_HEIGHT_EXTEND}vh; will-change: transform;`}>
     <ImageWrapper id="banner" 
                   alt="Banner image of the blog" 
-                  class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
+                  class:list={["object-cover h-full transition duration-700 opacity-0 scale-105 animation-optimized"]}
                   src={siteConfig.banner.src} 
                   position={siteConfig.banner.position}>
     </ImageWrapper>
@@ -73,7 +73,7 @@ const mainPanelTop = siteConfig.banner.enable
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
         <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-1 lg:grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
-    mx-auto gap-4 px-4 md:px-4"
+    mx-auto gap-4 px-4 md:px-4 gpu-accelerated" style="will-change: transform;"
         >
             <!-- Banner image credit -->
             {hasBannerCredit && <a href={siteConfig.banner.credit.url} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
@@ -89,7 +89,7 @@ const mainPanelTop = siteConfig.banner.enable
             </a>}
 
 
-            <SideBar class="mb-4 row-start-2 row-end-3 col-span-1 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation" headings={headings}></SideBar>
+            <SideBar class="mb-4 row-start-2 row-end-3 col-span-1 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation sidebar-transition" headings={headings}></SideBar>
 
             <main id="swup-container" class="transition-swup-fade col-span-1 lg:col-span-1 overflow-hidden">
                 <div id="content-wrapper" class="onload-animation">
