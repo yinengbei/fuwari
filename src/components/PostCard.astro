@@ -127,7 +127,7 @@ const { remarkPluginFrontmatter } = await entry.render();
         
         if (!countSpan || !postUrl) return;
         
-        fetch(`/api/views?id=${encodeURIComponent(postUrl)}`)
+        fetch(`/api/views?id=${encodeURIComponent(postUrl)}&action=get`)
           .then(res => res.json())
           .then(data => {
             if (typeof data.visitCount === 'number') {
