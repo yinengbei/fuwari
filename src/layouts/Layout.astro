@@ -104,6 +104,7 @@ const bannerOffset =
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="theme-color" content="oklch(0.70 0.14 250)" />
+		<meta name="mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 		<meta name="apple-mobile-web-app-title" content={siteConfig.title} />
@@ -408,15 +409,37 @@ function initCustomScrollbar() {
 
 	const katexObserver = new IntersectionObserver((entries, observer) => {
 		// Process entries in batches to avoid blocking
-		entries.forEach((entry, index) => {
+		const toProcess: HTMLElement[] = [];
+		entries.forEach((entry) => {
 			if (entry.isIntersecting) {
-				// Stagger processing to avoid blocking
-				setTimeout(() => {
-					processKatexElement(entry.target as HTMLElement);
-					observer.unobserve(entry.target);
-				}, index * 10);
+				toProcess.push(entry.target as HTMLElement);
+				observer.unobserve(entry.target);
 			}
 		});
+
+		if (toProcess.length > 0) {
+			// Process in idle time to avoid blocking the main thread
+			const processBatch = () => {
+				const batchSize = 2; // Process in small batches
+				const batch = toProcess.splice(0, batchSize);
+				
+				batch.forEach(processKatexElement);
+				
+				if (toProcess.length > 0) {
+					if ('requestIdleCallback' in window) {
+						(window as any).requestIdleCallback(processBatch, { timeout: 1000 });
+					} else {
+						setTimeout(processBatch, 50);
+					}
+				}
+			};
+
+			if ('requestIdleCallback' in window) {
+				(window as any).requestIdleCallback(processBatch, { timeout: 1000 });
+			} else {
+				setTimeout(processBatch, 50);
+			}
+		}
 	}, katexObserverOptions);
 
 	katexElements.forEach(element => {
@@ -675,6 +698,43 @@ function initScrollElements() {
 	toc = document.getElementById('toc-wrapper');
 	navbar = document.getElementById('navbar-wrapper');
 	bodyElement = document.querySelector('body');
+	initUIObservers();
+}
+
+function initUIObservers() {
+	const banner = document.getElementById('banner-wrapper');
+	const footers = document.querySelectorAll('.footer');
+	
+	if (banner) {
+		const bannerObserver = new IntersectionObserver((entries) => {
+			const entry = entries[0];
+			// If banner is not intersecting and is above the viewport
+			const isPastBanner = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+			
+			if (backToTopBtn) backToTopBtn.classList.toggle('hide', !isPastBanner);
+			if (bannerEnabled && toc) toc.classList.toggle('toc-hide', !isPastBanner);
+		}, { threshold: 0 });
+		bannerObserver.observe(banner);
+	}
+	
+	if (footers.length > 0) {
+		const footerObserver = new IntersectionObserver((entries) => {
+			// If any footer is intersecting, hide the go-to-bottom button
+			const isAnyFooterIntersecting = entries.some(entry => entry.isIntersecting);
+			if (isAnyFooterIntersecting) {
+				if (goToBottomBtn) goToBottomBtn.classList.add('hide');
+			} else {
+				// Only show if we are not at the bottom
+				const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+				const scrollHeight = document.documentElement.scrollHeight;
+				const clientHeight = document.documentElement.clientHeight;
+				if (scrollTop + clientHeight < scrollHeight - 100) {
+					if (goToBottomBtn) goToBottomBtn.classList.remove('hide');
+				}
+			}
+		}, { threshold: 0 });
+		footers.forEach(footer => footerObserver.observe(footer));
+	}
 }
 
 // Initialize on page load
@@ -686,6 +746,10 @@ let lastBannerHeight = 0;
 let lastIsHome = false;
 
 function scrollFunction() {
+	if (!bannerEnabled || !navbar) {
+		return;
+	}
+
 	if (scrollTimeout !== null) {
 		return;
 	}
@@ -695,50 +759,27 @@ function scrollFunction() {
 		const innerHeight = window.innerHeight;
 		const innerWidth = window.innerWidth;
 
-		const bannerHeight = innerHeight * (BANNER_HEIGHT / 100);
 		const isHome = bodyElement?.classList.contains('lg:is-home') && innerWidth >= 1024;
 
 		// Only update if scroll position changed significantly or state changed
 		const scrollDelta = Math.abs(scrollTop - lastScrollTop);
-		const bannerHeightChanged = bannerHeight !== lastBannerHeight;
 		const isHomeChanged = isHome !== lastIsHome;
 		
-		if (scrollDelta < 5 && !bannerHeightChanged && !isHomeChanged) {
+		if (scrollDelta < 10 && !isHomeChanged) {
 			scrollTimeout = null;
 			return;
 		}
 
 		lastScrollTop = scrollTop;
-		lastBannerHeight = bannerHeight;
 		lastIsHome = !!isHome;
 
-		// Batch DOM reads
-		const scrollHeight = document.documentElement.scrollHeight;
-		const clientHeight = document.documentElement.clientHeight;
-		const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
-		const shouldShowBackToTop = scrollTop > bannerHeight;
-		const shouldHideGoToBottom = isNearBottom;
-		const shouldShowToc = bannerEnabled && scrollTop > bannerHeight;
-
-		// Batch DOM writes
-		if (backToTopBtn) {
-			backToTopBtn.classList.toggle('hide', !shouldShowBackToTop);
-		}
-
-		if (goToBottomBtn) {
-			goToBottomBtn.classList.toggle('hide', shouldHideGoToBottom);
-		}
-
-		if (bannerEnabled && toc) {
-			toc.classList.toggle('toc-hide', !shouldShowToc);
-		}
-
-		if (bannerEnabled && navbar) {
-			const NAVBAR_HEIGHT = 72;
-			const MAIN_PANEL_EXCESS_HEIGHT = MAIN_PANEL_OVERLAPS_BANNER_HEIGHT * 16;
-			const currentBannerHeight = isHome ? BANNER_HEIGHT_HOME : BANNER_HEIGHT;
-			const threshold = innerHeight * (currentBannerHeight / 100) - NAVBAR_HEIGHT - MAIN_PANEL_EXCESS_HEIGHT - 16;
-			
+		// Navbar logic remains here as it has a more complex threshold
+		const NAVBAR_HEIGHT = 72;
+		const MAIN_PANEL_EXCESS_HEIGHT = MAIN_PANEL_OVERLAPS_BANNER_HEIGHT * 16;
+		const currentBannerHeight = isHome ? BANNER_HEIGHT_HOME : BANNER_HEIGHT;
+		const threshold = innerHeight * (currentBannerHeight / 100) - NAVBAR_HEIGHT - MAIN_PANEL_EXCESS_HEIGHT - 16;
+		
+		if (navbar) {
 			navbar.classList.toggle('navbar-hidden', scrollTop >= threshold);
 		}
 		
