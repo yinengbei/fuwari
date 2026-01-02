@@ -67,6 +67,10 @@ if (isLocal) {
 			preloadSrc = optimizedImg.src;
 		}
 	}
+} else {
+	if (preload) {
+		preloadSrc = isPublic ? url(src) : src;
+	}
 }
 
 const imageClass = "w-full h-full object-cover";

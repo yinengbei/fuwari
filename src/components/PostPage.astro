@@ -21,9 +21,10 @@ const interval = 50;
                 image={entry.data.image}
                 description={entry.data.description}
                 draft={entry.data.draft}
-                class:list="onload-animation"
-                style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
+                class:list={index === 0 ? "" : "onload-animation"}
+                style={index === 0 ? "" : `animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
                 loading={index < 3 ? "eager" : "lazy"}
+                preload={index === 0}
         ></PostCard>
     ))}
 </div>
