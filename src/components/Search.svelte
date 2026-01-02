@@ -104,6 +104,9 @@ onMount(() => {
 		);
 		initializeSearch();
 	} else {
+		if (window.pagefind) {
+			initializeSearch();
+		}
 		document.addEventListener("pagefindready", () => {
 			console.log("Pagefind ready event received.");
 			initializeSearch();
@@ -114,14 +117,6 @@ onMount(() => {
 			);
 			initializeSearch(); // Initialize with pagefindLoaded as false
 		});
-
-		// Fallback in case events are not caught or pagefind is already loaded by the time this script runs
-		setTimeout(() => {
-			if (!initialized) {
-				console.log("Fallback: Initializing search after timeout.");
-				initializeSearch();
-			}
-		}, 2000); // Adjust timeout as needed
 	}
 });
 

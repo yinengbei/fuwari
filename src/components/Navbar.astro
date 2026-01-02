@@ -143,10 +143,11 @@ loadButtonScript();
     
     // Load when search input is focused or clicked
     function loadOnSearchInteraction() {
-        const searchInputs = document.querySelectorAll('#search-bar input, #search-switch');
+        const searchInputs = document.querySelectorAll('#search-bar input, #search-switch, #search-bar-inside input');
         searchInputs.forEach(input => {
             input.addEventListener('focus', loadPagefind, { once: true, passive: true });
             input.addEventListener('click', loadPagefind, { once: true, passive: true });
+            input.addEventListener('touchstart', loadPagefind, { once: true, passive: true });
         });
     }
     
@@ -154,12 +155,9 @@ loadButtonScript();
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             loadOnSearchInteraction();
-            // Delay loading Pagefind until after critical resources
-            setTimeout(loadPagefind, 2000);
         });
     } else {
         loadOnSearchInteraction();
-        setTimeout(loadPagefind, 2000);
     }
 })();
 </script>}
