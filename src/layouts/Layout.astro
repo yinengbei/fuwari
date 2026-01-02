@@ -501,8 +501,6 @@ function init() {
 /* Load settings when entering the site */
 init();
 
-let scrollAnimationFrameId: number | null = null;
-
 const setup = () => {
 	// TODO: temp solution to change the height of the banner
 /*
@@ -541,12 +539,6 @@ const setup = () => {
 		}, 0);
 	})
 	window.swup.hooks.on('content:replace', () => {
-		// Stop any ongoing scroll animation
-		if (scrollAnimationFrameId !== null) {
-			cancelAnimationFrame(scrollAnimationFrameId);
-			scrollAnimationFrameId = null;
-		}
-
 		// Re-initialize cached elements after content replacement
 		initScrollElements();
 		
@@ -571,6 +563,8 @@ const setup = () => {
 			cleanupAnimationWillChange();
 		}, 0);
 	})
+	let scrollAnimationFrameId: number | null = null;
+
 	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
 		if (scrollAnimationFrameId !== null) {
 			cancelAnimationFrame(scrollAnimationFrameId);
@@ -579,33 +573,36 @@ const setup = () => {
 
 		const startScroll = window.pageYOffset || document.documentElement.scrollTop;
 		if (startScroll > 0) {
-			// Use a more relaxed duration and cubic easing for smoother animation
-			const minDuration = 300;
-			const maxDuration = 600;
-			const scrollDuration = Math.min(maxDuration, Math.max(minDuration, startScroll / 6 + 100));
+			// Use CSS scroll-behavior for smoother animation when possible
+			// Fallback to requestAnimationFrame for better control
+			const minDuration = 200;
+			const maxDuration = 300;
+			const scrollDuration = Math.min(maxDuration, Math.max(minDuration, startScroll / 4 + 50));
 			const startTime = performance.now();
 			const startScrollValue = startScroll;
 			
 			const scrollToTop = (currentTime: number) => {
 				const elapsed = currentTime - startTime;
 				const progress = Math.min(elapsed / scrollDuration, 1);
+				// Use simpler easing function for better performance
+				const easeOutQuad = 1 - (1 - progress) * (1 - progress);
+				const currentScroll = startScrollValue * (1 - easeOutQuad);
 				
-				// Cubic ease-out is smoother than quadratic
-				const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-				const currentScroll = startScrollValue * (1 - easeOutCubic);
-				
-				window.scrollTo(0, currentScroll);
+				window.scrollTo({
+					top: currentScroll,
+					behavior: 'auto'
+				});
 				
 				if (progress < 1) {
 					scrollAnimationFrameId = requestAnimationFrame(scrollToTop);
 				} else {
-					window.scrollTo(0, 0);
+					window.scrollTo({ top: 0, behavior: 'auto' });
 					scrollAnimationFrameId = null;
 				}
 			};
 			scrollAnimationFrameId = requestAnimationFrame(scrollToTop);
 		} else {
-			window.scrollTo(0, 0);
+			window.scrollTo({ top: 0, behavior: 'auto' });
 		}
 
 		// Use setTimeout for non-critical DOM updates
@@ -689,7 +686,7 @@ let lastBannerHeight = 0;
 let lastIsHome = false;
 
 function scrollFunction() {
-	if (scrollTimeout !== null || scrollAnimationFrameId !== null) {
+	if (scrollTimeout !== null) {
 		return;
 	}
 	
