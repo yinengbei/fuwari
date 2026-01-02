@@ -339,12 +339,14 @@ function loadHue() {
 	setHue(getHue())
 }
 
+let bodyScrollbarInstance: any = null;
+
 function initCustomScrollbar() {
 	const bodyElement = document.querySelector('body');
 	if (!bodyElement) return;
-	OverlayScrollbars(
-		// docs say that a initialization to the body element would affect native functionality like window.scrollTo
-		// but just leave it here for now
+	
+	// Optimize OverlayScrollbars configuration for better performance
+	bodyScrollbarInstance = OverlayScrollbars(
 		{
 			target: bodyElement,
 			cancel: {
@@ -354,8 +356,9 @@ function initCustomScrollbar() {
 		scrollbars: {
 			theme: 'scrollbar-base scrollbar-auto py-1',
 			autoHide: 'move',
-			autoHideDelay: 500,
+			autoHideDelay: 300,  // Reduced from 500ms for faster hiding
 			autoHideSuspend: false,
+			clickScrolling: true,
 		},
 	});
 
@@ -367,34 +370,51 @@ function initCustomScrollbar() {
 		threshold: 0.1
 	};
 
+	// Use requestIdleCallback for non-critical katex processing
 	const processKatexElement = (element: HTMLElement) => {
 		if (!element.parentNode) return;
 		if (element.hasAttribute('data-scrollbar-initialized')) return;
 
-		const container = document.createElement('div');
-		container.className = 'katex-display-container';
-		container.setAttribute('aria-label', 'scrollable container for formulas');
+		// Use requestIdleCallback to defer non-critical work
+		const process = () => {
+			if (!element.parentNode) return;
+			
+			const container = document.createElement('div');
+			container.className = 'katex-display-container';
+			container.setAttribute('aria-label', 'scrollable container for formulas');
 
-		element.parentNode.insertBefore(container, element);
-		container.appendChild(element);
+			element.parentNode.insertBefore(container, element);
+			container.appendChild(element);
 
-		OverlayScrollbars(container, {
-			scrollbars: {
-				theme: 'scrollbar-base scrollbar-auto',
-				autoHide: 'leave',
-				autoHideDelay: 500,
-				autoHideSuspend: false
-			}
-		});
+			OverlayScrollbars(container, {
+				scrollbars: {
+					theme: 'scrollbar-base scrollbar-auto',
+					autoHide: 'leave',
+					autoHideDelay: 300,  // Reduced delay
+					autoHideSuspend: false
+				},
+			});
 
-		element.setAttribute('data-scrollbar-initialized', 'true');
+			element.setAttribute('data-scrollbar-initialized', 'true');
+		};
+
+		// Use requestIdleCallback if available, otherwise setTimeout
+		if ('requestIdleCallback' in window) {
+			(window as any).requestIdleCallback(process, { timeout: 1000 });
+		} else {
+			setTimeout(process, 0);
+		}
 	};
 
 	const katexObserver = new IntersectionObserver((entries, observer) => {
-		entries.forEach(entry => {
+		// Process entries in batches to avoid blocking
+		entries.forEach((entry, index) => {
 			if (entry.isIntersecting) {
-			processKatexElement(entry.target as HTMLElement);
-			observer.unobserve(entry.target);
+				// Stagger processing to avoid blocking
+				setTimeout(() => {
+					processKatexElement(entry.target as HTMLElement);
+					observer.unobserve(entry.target);
+				}, index * 10);
 			}
 		});
 	}, katexObserverOptions);
@@ -461,10 +481,21 @@ function init() {
 	// disableAnimation()()		// TODO
 	loadTheme();
 	loadHue();
-	initCustomScrollbar();
 	showBanner();
 	cleanupAnimationWillChange();
 	registerServiceWorker();
+	
+	// Delay OverlayScrollbars initialization to avoid blocking initial render
+	// Use requestIdleCallback if available, otherwise setTimeout
+	if ('requestIdleCallback' in window) {
+		(window as any).requestIdleCallback(() => {
+			initCustomScrollbar();
+		}, { timeout: 2000 });
+	} else {
+		setTimeout(() => {
+			initCustomScrollbar();
+		}, 100);
+	}
 }
 
 /* Load settings when entering the site */
@@ -491,31 +522,46 @@ const setup = () => {
 			sidebar.style.display = 'none';
 		}
 
-		requestAnimationFrame(() => {
+		// Use setTimeout for non-critical DOM updates to avoid blocking
+		setTimeout(() => {
 			if (!bannerEnabled) {
 				return
 			}
-			let threshold = window.innerHeight * (BANNER_HEIGHT / 100) - 72 - 16
-			let navbar = document.getElementById('navbar-wrapper')
+			const threshold = window.innerHeight * (BANNER_HEIGHT / 100) - 72 - 16
+			const navbar = document.getElementById('navbar-wrapper')
 			if (!navbar || !document.body.classList.contains('lg:is-home')) {
 				return
 			}
-			if (document.body.scrollTop >= threshold || document.documentElement.scrollTop >= threshold) {
+			const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+			if (scrollTop >= threshold) {
 				navbar.classList.add('navbar-hidden')
 			}
-		});
+		}, 0);
 	})
 	window.swup.hooks.on('content:replace', () => {
-		initCustomScrollbar();
+		// Re-initialize cached elements after content replacement
+		initScrollElements();
 		
 		const sidebar = document.getElementById('sidebar');
 		if (sidebar && window.innerWidth < 1024) {
 			sidebar.style.display = 'none';
 		}
 		
-		requestAnimationFrame(() => {
+		// Delay scrollbar re-initialization to avoid blocking
+		if ('requestIdleCallback' in window) {
+			(window as any).requestIdleCallback(() => {
+				initCustomScrollbar();
+			}, { timeout: 1000 });
+		} else {
+			setTimeout(() => {
+				initCustomScrollbar();
+			}, 50);
+		}
+		
+		// Use setTimeout with 0 delay instead of requestAnimationFrame for non-critical updates
+		setTimeout(() => {
 			cleanupAnimationWillChange();
-		});
+		}, 0);
 	})
 	let scrollAnimationFrameId: number | null = null;
 
@@ -527,17 +573,20 @@ const setup = () => {
 
 		const startScroll = window.pageYOffset || document.documentElement.scrollTop;
 		if (startScroll > 0) {
-			const minDuration = 250;
-			const maxDuration = 350;
-			const scrollDuration = Math.min(maxDuration, Math.max(minDuration, startScroll / 3 + 100));
+			// Use CSS scroll-behavior for smoother animation when possible
+			// Fallback to requestAnimationFrame for better control
+			const minDuration = 200;
+			const maxDuration = 300;
+			const scrollDuration = Math.min(maxDuration, Math.max(minDuration, startScroll / 4 + 50));
 			const startTime = performance.now();
 			const startScrollValue = startScroll;
 			
 			const scrollToTop = (currentTime: number) => {
 				const elapsed = currentTime - startTime;
 				const progress = Math.min(elapsed / scrollDuration, 1);
-				const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-				const currentScroll = startScrollValue * (1 - easeOutCubic);
+				// Use simpler easing function for better performance
+				const easeOutQuad = 1 - (1 - progress) * (1 - progress);
+				const currentScroll = startScrollValue * (1 - easeOutQuad);
 				
 				window.scrollTo({
 					top: currentScroll,
@@ -556,7 +605,8 @@ const setup = () => {
 			window.scrollTo({ top: 0, behavior: 'auto' });
 		}
 
-		requestAnimationFrame(() => {
+		// Use setTimeout for non-critical DOM updates
+		setTimeout(() => {
 			const bodyElement = document.querySelector('body')
 			if (pathsEqual(visit.to.url, url('/'))) {
 				bodyElement!.classList.add('lg:is-home');
@@ -564,21 +614,22 @@ const setup = () => {
 				bodyElement!.classList.remove('lg:is-home');
 			}
 
-			let toc = document.getElementById('toc-wrapper');
-			if (toc) {
-				toc.classList.add('toc-not-ready')
+			const tocElement = document.getElementById('toc-wrapper');
+			if (tocElement) {
+				tocElement.classList.add('toc-not-ready')
 			}
-		});
+		}, 0);
 	});
 	window.swup.hooks.on('page:view', () => {});
 	
 	window.swup.hooks.on('animation:out:end', () => {
-		requestAnimationFrame(() => {
-			const toc = document.getElementById('toc-wrapper');
-			if (toc) {
-				toc.classList.remove('toc-not-ready')
+		// Use setTimeout for non-critical updates
+		setTimeout(() => {
+			const tocElement = document.getElementById('toc-wrapper');
+			if (tocElement) {
+				tocElement.classList.remove('toc-not-ready')
 			}
-		});
+		}, 0);
 	});
 	
 	window.swup.hooks.on('animation:in:end', () => {
@@ -589,17 +640,18 @@ const setup = () => {
 	});
 	
 	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
-		requestAnimationFrame(() => {
-			const toc = document.getElementById('toc-wrapper');
-			if (toc && toc.classList.contains('toc-not-ready')) {
-				toc.classList.remove('toc-not-ready')
+		// Use setTimeout for non-critical updates
+		setTimeout(() => {
+			const tocElement = document.getElementById('toc-wrapper');
+			if (tocElement && tocElement.classList.contains('toc-not-ready')) {
+				tocElement.classList.remove('toc-not-ready')
 			}
 			
 			const sidebar = document.getElementById('sidebar');
 			if (sidebar && window.innerWidth < 1024) {
 				sidebar.style.display = '';
 			}
-		});
+		}, 0);
 	});
 }
 if (window?.swup?.hooks) {
@@ -608,12 +660,28 @@ if (window?.swup?.hooks) {
 	document.addEventListener('swup:enable', setup)
 }
 
-let backToTopBtn = document.getElementById('back-to-top-btn');
-let goToBottomBtn = document.getElementById('go-to-bottom-btn');
-let toc = document.getElementById('toc-wrapper');
-let navbar = document.getElementById('navbar-wrapper')
+// Cache DOM elements to avoid repeated queries
+let backToTopBtn: HTMLElement | null = null;
+let goToBottomBtn: HTMLElement | null = null;
+let toc: HTMLElement | null = null;
+let navbar: HTMLElement | null = null;
+
+// Initialize cached elements once
+function initScrollElements() {
+	backToTopBtn = document.getElementById('back-to-top-btn');
+	goToBottomBtn = document.getElementById('go-to-bottom-btn');
+	toc = document.getElementById('toc-wrapper');
+	navbar = document.getElementById('navbar-wrapper');
+}
+
+// Initialize on page load
+initScrollElements();
 
 let scrollTimeout: number | null = null;
+let lastScrollTop = 0;
+let lastBannerHeight = 0;
+let lastIsHome = false;
+
 function scrollFunction() {
 	if (scrollTimeout !== null) {
 		return;
@@ -625,51 +693,71 @@ function scrollFunction() {
 		const clientHeight = document.documentElement.clientHeight;
 		const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
 		const bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100);
+		const isHome = document.body.classList.contains('lg:is-home') && window.innerWidth >= 1024;
 
+		// Only update if scroll position changed significantly or state changed
+		const scrollDelta = Math.abs(scrollTop - lastScrollTop);
+		const bannerHeightChanged = bannerHeight !== lastBannerHeight;
+		const isHomeChanged = isHome !== lastIsHome;
+		
+		if (scrollDelta < 5 && !bannerHeightChanged && !isHomeChanged) {
+			scrollTimeout = null;
+			return;
+		}
+
+		lastScrollTop = scrollTop;
+		lastBannerHeight = bannerHeight;
+		lastIsHome = isHome;
+
+		// Batch DOM reads
+		const shouldShowBackToTop = scrollTop > bannerHeight;
+		const shouldHideGoToBottom = isNearBottom;
+		const shouldShowToc = bannerEnabled && scrollTop > bannerHeight;
+
+		// Batch DOM writes
 		if (backToTopBtn) {
-			if (scrollTop > bannerHeight) {
-				backToTopBtn.classList.remove('hide')
+			if (shouldShowBackToTop) {
+				backToTopBtn.classList.remove('hide');
 			} else {
-				backToTopBtn.classList.add('hide')
+				backToTopBtn.classList.add('hide');
 			}
 		}
 
 		if (goToBottomBtn) {
-			if (isNearBottom) {
-				goToBottomBtn.classList.add('hide')
+			if (shouldHideGoToBottom) {
+				goToBottomBtn.classList.add('hide');
 			} else {
-				goToBottomBtn.classList.remove('hide')
+				goToBottomBtn.classList.remove('hide');
 			}
 		}
 
 		if (bannerEnabled && toc) {
-			if (scrollTop > bannerHeight) {
-				toc.classList.remove('toc-hide')
+			if (shouldShowToc) {
+				toc.classList.remove('toc-hide');
 			} else {
-				toc.classList.add('toc-hide')
+				toc.classList.add('toc-hide');
 			}
 		}
 
 		if (bannerEnabled && navbar) {
-			const NAVBAR_HEIGHT = 72
-			const MAIN_PANEL_EXCESS_HEIGHT = MAIN_PANEL_OVERLAPS_BANNER_HEIGHT * 16
-
-			let currentBannerHeight = BANNER_HEIGHT
-			if (document.body.classList.contains('lg:is-home') && window.innerWidth >= 1024) {
-				currentBannerHeight = BANNER_HEIGHT_HOME
-			}
-			let threshold = window.innerHeight * (currentBannerHeight / 100) - NAVBAR_HEIGHT - MAIN_PANEL_EXCESS_HEIGHT - 16
+			const NAVBAR_HEIGHT = 72;
+			const MAIN_PANEL_EXCESS_HEIGHT = MAIN_PANEL_OVERLAPS_BANNER_HEIGHT * 16;
+			const currentBannerHeight = isHome ? BANNER_HEIGHT_HOME : BANNER_HEIGHT;
+			const threshold = window.innerHeight * (currentBannerHeight / 100) - NAVBAR_HEIGHT - MAIN_PANEL_EXCESS_HEIGHT - 16;
+			
 			if (scrollTop >= threshold) {
-				navbar.classList.add('navbar-hidden')
+				navbar.classList.add('navbar-hidden');
 			} else {
-				navbar.classList.remove('navbar-hidden')
+				navbar.classList.remove('navbar-hidden');
 			}
 		}
 		
 		scrollTimeout = null;
 	});
 }
-window.onscroll = scrollFunction
+
+// Use passive event listener for better performance
+window.addEventListener('scroll', scrollFunction, { passive: true });
 
 window.onresize = () => {
 	// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
