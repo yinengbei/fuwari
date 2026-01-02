@@ -88,7 +88,7 @@ const { remarkPluginFrontmatter } = await entry.render();
       { description || remarkPluginFrontmatter.excerpt }
     </div>
 
-    <div class="text-sm text-black/30 dark:text-white/30 flex gap-3 md:gap-4 transition flex-wrap items-center">
+    <div class="text-sm text-black/45 dark:text-white/45 flex gap-3 md:gap-4 transition flex-wrap items-center">
       <div>{remarkPluginFrontmatter.words} {i18n(remarkPluginFrontmatter.words === 1 ? I18nKey.wordCount : I18nKey.wordsCount)}</div>
       <div class="hidden md:block">|</div>
       <div>{remarkPluginFrontmatter.minutes} {i18n(remarkPluginFrontmatter.minutes === 1 ? I18nKey.minuteCount : I18nKey.minutesCount)}</div>
