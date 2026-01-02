@@ -9,7 +9,7 @@ let delay = 0;
 const interval = 50;
 ---
 <div class="transition flex flex-col gap-3 md:gap-4 mb-4">
-    {page.data.map((entry: CollectionEntry<"posts">) => (
+    {page.data.map((entry: CollectionEntry<"posts">, index: number) => (
         <PostCard
                 entry={entry}
                 title={entry.data.title}
@@ -23,6 +23,7 @@ const interval = 50;
                 draft={entry.data.draft}
                 class:list="onload-animation"
                 style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
+                loading={index < 3 ? "eager" : "lazy"}
         ></PostCard>
     ))}
 </div>
