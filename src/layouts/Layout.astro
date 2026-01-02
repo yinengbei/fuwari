@@ -766,23 +766,13 @@ window.onresize = () => {
 </script>
 
 <script>
-let lightbox: any;
+import PhotoSwipeLightbox from "photoswipe/lightbox"
+import "photoswipe/style.css"
+
+let lightbox: PhotoSwipeLightbox
 let pswp = import("photoswipe")
 
-async function createPhotoSwipe() {
-	const images = document.querySelectorAll(".custom-md img, #post-cover img");
-	if (images.length === 0) return;
-
-	const [PhotoSwipeLightbox] = await Promise.all([
-		import("photoswipe/lightbox").then(m => m.default),
-		import("photoswipe/style.css"),
-		import("../styles/photoswipe.css")
-	]);
-
-	if (lightbox) {
-		lightbox.destroy();
-	}
-
+function createPhotoSwipe() {
 	lightbox = new PhotoSwipeLightbox({
 		gallery: ".custom-md img, #post-cover img",
 		pswpModule: () => pswp,
