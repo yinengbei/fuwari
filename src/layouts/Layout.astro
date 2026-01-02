@@ -358,7 +358,7 @@ function initCustomScrollbar() {
 			autoHide: 'move',
 			autoHideDelay: 300,  // Reduced from 500ms for faster hiding
 			autoHideSuspend: false,
-			clickScrolling: true,
+			clickScroll: true,
 		},
 	});
 
@@ -666,12 +666,15 @@ let goToBottomBtn: HTMLElement | null = null;
 let toc: HTMLElement | null = null;
 let navbar: HTMLElement | null = null;
 
+let bodyElement: HTMLElement | null = null;
+
 // Initialize cached elements once
 function initScrollElements() {
 	backToTopBtn = document.getElementById('back-to-top-btn');
 	goToBottomBtn = document.getElementById('go-to-bottom-btn');
 	toc = document.getElementById('toc-wrapper');
 	navbar = document.getElementById('navbar-wrapper');
+	bodyElement = document.querySelector('body');
 }
 
 // Initialize on page load
@@ -688,12 +691,12 @@ function scrollFunction() {
 	}
 	
 	scrollTimeout = requestAnimationFrame(() => {
-		const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-		const scrollHeight = document.documentElement.scrollHeight;
-		const clientHeight = document.documentElement.clientHeight;
-		const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
-		const bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100);
-		const isHome = document.body.classList.contains('lg:is-home') && window.innerWidth >= 1024;
+		const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+		const innerHeight = window.innerHeight;
+		const innerWidth = window.innerWidth;
+
+		const bannerHeight = innerHeight * (BANNER_HEIGHT / 100);
+		const isHome = bodyElement?.classList.contains('lg:is-home') && innerWidth >= 1024;
 
 		// Only update if scroll position changed significantly or state changed
 		const scrollDelta = Math.abs(scrollTop - lastScrollTop);
@@ -707,49 +710,36 @@ function scrollFunction() {
 
 		lastScrollTop = scrollTop;
 		lastBannerHeight = bannerHeight;
-		lastIsHome = isHome;
+		lastIsHome = !!isHome;
 
 		// Batch DOM reads
+		const scrollHeight = document.documentElement.scrollHeight;
+		const clientHeight = document.documentElement.clientHeight;
+		const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
 		const shouldShowBackToTop = scrollTop > bannerHeight;
 		const shouldHideGoToBottom = isNearBottom;
 		const shouldShowToc = bannerEnabled && scrollTop > bannerHeight;
 
 		// Batch DOM writes
 		if (backToTopBtn) {
-			if (shouldShowBackToTop) {
-				backToTopBtn.classList.remove('hide');
-			} else {
-				backToTopBtn.classList.add('hide');
-			}
+			backToTopBtn.classList.toggle('hide', !shouldShowBackToTop);
 		}
 
 		if (goToBottomBtn) {
-			if (shouldHideGoToBottom) {
-				goToBottomBtn.classList.add('hide');
-			} else {
-				goToBottomBtn.classList.remove('hide');
-			}
+			goToBottomBtn.classList.toggle('hide', shouldHideGoToBottom);
 		}
 
 		if (bannerEnabled && toc) {
-			if (shouldShowToc) {
-				toc.classList.remove('toc-hide');
-			} else {
-				toc.classList.add('toc-hide');
-			}
+			toc.classList.toggle('toc-hide', !shouldShowToc);
 		}
 
 		if (bannerEnabled && navbar) {
 			const NAVBAR_HEIGHT = 72;
 			const MAIN_PANEL_EXCESS_HEIGHT = MAIN_PANEL_OVERLAPS_BANNER_HEIGHT * 16;
 			const currentBannerHeight = isHome ? BANNER_HEIGHT_HOME : BANNER_HEIGHT;
-			const threshold = window.innerHeight * (currentBannerHeight / 100) - NAVBAR_HEIGHT - MAIN_PANEL_EXCESS_HEIGHT - 16;
+			const threshold = innerHeight * (currentBannerHeight / 100) - NAVBAR_HEIGHT - MAIN_PANEL_EXCESS_HEIGHT - 16;
 			
-			if (scrollTop >= threshold) {
-				navbar.classList.add('navbar-hidden');
-			} else {
-				navbar.classList.remove('navbar-hidden');
-			}
+			navbar.classList.toggle('navbar-hidden', scrollTop >= threshold);
 		}
 		
 		scrollTimeout = null;
@@ -759,11 +749,18 @@ function scrollFunction() {
 // Use passive event listener for better performance
 window.addEventListener('scroll', scrollFunction, { passive: true });
 
+let resizeTimeout: number | null = null;
 window.onresize = () => {
-	// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
-	let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
-	offset = offset - offset % 4;
-	document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+	if (resizeTimeout !== null) {
+		cancelAnimationFrame(resizeTimeout);
+	}
+	resizeTimeout = requestAnimationFrame(() => {
+		// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
+		let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
+		offset = offset - offset % 4;
+		document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+		resizeTimeout = null;
+	});
 }
 
 </script>
