@@ -1,14 +1,16 @@
 .scrollbar-base.os-scrollbar {
-    @apply transition-all;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease !important;
     pointer-events: unset;
 
     &.os-scrollbar-horizontal {
         @apply py-1 px-2 h-4;
         .os-scrollbar-track .os-scrollbar-handle {
             @apply rounded-full h-1;
+            transition: background-color 0.15s ease, transform 0.15s ease !important;
+            transform-origin: center;
         }
         &:hover .os-scrollbar-track .os-scrollbar-handle {
-            @apply h-2;
+            transform: scaleY(2);
         }
     }
 
@@ -16,9 +18,11 @@
         @apply px-1 py-1 w-4;
         .os-scrollbar-track .os-scrollbar-handle {
             @apply rounded-full w-1;
+            transition: background-color 0.15s ease, transform 0.15s ease !important;
+            transform-origin: center;
         }
         &:hover .os-scrollbar-track .os-scrollbar-handle {
-            @apply w-2;
+            transform: scaleX(2);
         }
     }
 }
