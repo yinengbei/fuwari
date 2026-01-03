@@ -188,19 +188,50 @@ const bannerOffset =
 			description: description || siteConfig.subtitle,
 			author: profileConfig.name,
 			url: Astro.url,
-			image: profileConfig.avatar ? (profileConfig.avatar.startsWith('http') ? profileConfig.avatar : url(profileConfig.avatar)) : ""
+			image: profileConfig.avatar ? (profileConfig.avatar.startsWith('http') ? profileConfig.avatar : url(profileConfig.avatar)) : "",
+			isHomePage: pathsEqual(Astro.url.pathname, url("/")),
+			homeUrl: url("/"),
+			pageTitle: title
 		}}>
 			{
 				"@context": "https://schema.org",
-				"@type": "WebSite",
-				"name": title,
-				"description": description,
-				"author": {
-					"@type": "Person",
-					"name": author,
-					"image": image
-				},
-				"url": url
+				"@graph": [
+					{
+						"@type": "WebSite",
+						"@id": homeUrl + "#website",
+						"url": homeUrl,
+						"name": title,
+						"description": description,
+						"author": {
+							"@type": "Person",
+							"name": author,
+							"image": image
+						}
+					},
+					{
+						"@type": "BreadcrumbList",
+						"@id": url + "#breadcrumb",
+						"itemListElement": [
+							{
+								"@type": "ListItem",
+								"position": 1,
+								"item": {
+									"@id": homeUrl,
+									"name": "Home"
+								}
+							}
+							].concat(isHomePage ? [] : [
+								{
+									"@type": "ListItem",
+									"position": 2,
+									"item": {
+										"@id": url,
+										"name": pageTitle
+									}
+								}
+							])
+					}
+				]
 			}
 		</script>
 	</head>

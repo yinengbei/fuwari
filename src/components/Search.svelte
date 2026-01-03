@@ -140,19 +140,20 @@ $: if (initialized && keywordMobile) {
 ">
     <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/40 dark:text-white/40"></Icon>
     <input placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
+           aria-label={i18n(I18nKey.search)}
            class="transition-all pl-10 text-sm bg-transparent outline-0
          h-full w-40 active:w-60 focus:w-60 text-black/60 dark:text-white/60"
     >
 </div>
 
 <!-- toggle btn for phone/tablet view -->
-<button on:click={togglePanel} aria-label="Search Panel" id="search-switch"
+<button on:click={togglePanel} aria-label={i18n(I18nKey.search)} id="search-switch"
         class="btn-plain scale-animation lg:!hidden rounded-lg w-11 h-11 active:scale-90">
     <Icon icon="material-symbols:search" class="text-[1.25rem]"></Icon>
 </button>
 
 <!-- search panel -->
-<div id="search-panel" class="float-panel float-panel-closed search-panel absolute md:w-[30rem]
+<div id="search-panel" role="dialog" aria-label="Search results" class="float-panel float-panel-closed search-panel absolute md:w-[30rem]
 top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
 
     <!-- search bar inside panel for phone/tablet -->
@@ -161,7 +162,8 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
       dark:bg-white/10 dark:hover:bg-white/15 dark:focus-within:bg-white/15
   ">
         <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/40 dark:text-white/40"></Icon>
-        <input placeholder="Search" bind:value={keywordMobile}
+        <input placeholder={i18n(I18nKey.search)} bind:value={keywordMobile}
+               aria-label={i18n(I18nKey.search)}
                class="pl-10 absolute inset-0 text-sm bg-transparent outline-0
                focus:w-60 text-black/60 dark:text-white/60"
         >
