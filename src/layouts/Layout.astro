@@ -75,24 +75,13 @@ const bannerOffset =
 ---
 
 <!DOCTYPE html>
-<html lang={siteLang} class="bg-[var(--page-bg)] text-[14px] md:text-[16px] text-black/90 dark:text-white/90"
+<html lang={siteLang} class="bg-[var(--page-bg)] text-[14px] md:text-[16px] text-black/90"
 	  data-overlayscrollbars-initialize
 >
 	<head>
-		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
-			function applyTheme(theme) {
-				if (theme === DARK_MODE || (theme === AUTO_MODE && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-					document.documentElement.classList.add('dark');
-				} else {
-					document.documentElement.classList.remove('dark');
-				}
-				document.documentElement.setAttribute('data-theme', theme);
-			}
-			const savedTheme = localStorage.getItem('theme') || DEFAULT_THEME;
-			applyTheme(savedTheme);
-
-			const hue = localStorage.getItem('hue') || configHue;
-			document.documentElement.style.setProperty('--hue', hue);
+		<script is:inline define:vars={{BANNER_HEIGHT_EXTEND, configHue}}>
+			// Fixed theme color (Hue)
+			document.documentElement.style.setProperty('--hue', configHue);
 
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
@@ -199,7 +188,7 @@ const bannerOffset =
 			description: description || siteConfig.subtitle,
 			author: profileConfig.name,
 			url: Astro.url,
-			image: url(profileConfig.avatar)
+			image: profileConfig.avatar ? (profileConfig.avatar.startsWith('http') ? profileConfig.avatar : url(profileConfig.avatar)) : ""
 		}}>
 			{
 				"@context": "https://schema.org",
