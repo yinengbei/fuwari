@@ -37,7 +37,7 @@ const hasBannerCredit =
 const hasBannerLink = !!siteConfig.banner.credit.url;
 
 const mainPanelTop = siteConfig.banner.enable
-	? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
+	? `calc(${BANNER_HEIGHT}dvh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
 	: "5.5rem";
 ---
 
@@ -54,15 +54,15 @@ const mainPanelTop = siteConfig.banner.enable
 {siteConfig.banner.enable && 
   <div id="banner-wrapper" 
        class={`absolute z-10 w-full transition duration-700 overflow-hidden gpu-accelerated`} 
-       style={`top: -${BANNER_HEIGHT_EXTEND}vh; will-change: transform;`}>
+       style={`top: -${BANNER_HEIGHT_EXTEND}dvh; will-change: transform;`}>
     <ImageWrapper id="banner" 
                   alt="Banner image of the blog" 
                   class:list={["object-cover h-full transition duration-700 animation-optimized"]}
                   src={siteConfig.banner.src} 
                   position={siteConfig.banner.position}
                   loading="eager"
-                  fetchpriority="auto"
-                  preload={false}
+                  fetchpriority="high"
+                  preload={true}
                   sizes="100vw"
                   widths={[640, 1024, 1920, 2560]}>
     </ImageWrapper>

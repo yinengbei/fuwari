@@ -75,11 +75,30 @@ const bannerOffset =
 ---
 
 <!DOCTYPE html>
-<html lang={siteLang} class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px] text-black/90 dark:text-white/90"
+<html lang={siteLang} class="bg-[var(--page-bg)] text-[14px] md:text-[16px] text-black/90 dark:text-white/90"
 	  data-overlayscrollbars-initialize
 >
 	<head>
+		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
+			function applyTheme(theme) {
+				if (theme === DARK_MODE || (theme === AUTO_MODE && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+					document.documentElement.classList.add('dark');
+				} else {
+					document.documentElement.classList.remove('dark');
+				}
+				document.documentElement.setAttribute('data-theme', theme);
+			}
+			const savedTheme = localStorage.getItem('theme') || DEFAULT_THEME;
+			applyTheme(savedTheme);
 
+			const hue = localStorage.getItem('hue') || configHue;
+			document.documentElement.style.setProperty('--hue', hue);
+
+			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
+			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
+			offset = offset - offset % 4;
+			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+		</script>
 		<title>{pageTitle}</title>
 
 		<meta charset="UTF-8" />
@@ -121,34 +140,6 @@ const bannerOffset =
 		<!-- Apple Touch Icon -->
 		<link rel="apple-touch-icon" href={url('/favicon/favicon.png')} />
 
-		<!-- Set the theme before the page is rendered to avoid a flash -->
-		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
-			// Load the theme from local storage
-			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
-			switch (theme) {
-				case LIGHT_MODE:
-					document.documentElement.classList.remove('dark');
-					break
-				case DARK_MODE:
-					document.documentElement.classList.add('dark');
-					break
-				case AUTO_MODE:
-					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-						document.documentElement.classList.add('dark');
-					} else {
-						document.documentElement.classList.remove('dark');
-					}
-			}
-
-			// Load the hue from local storage
-			const hue = localStorage.getItem('hue') || configHue;
-			document.documentElement.style.setProperty('--hue', hue);
-
-			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
-			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
-			offset = offset - offset % 4;
-			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
-		</script>
 		<style define:vars={{
 			configHue,
 			'page-width': `${PAGE_WIDTH}rem`,
@@ -202,20 +193,44 @@ const bannerOffset =
 
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
 
+		<!-- JSON-LD Structured Data -->
+		<script type="application/ld+json" is:inline define:vars={{
+			title: siteConfig.title,
+			description: description || siteConfig.subtitle,
+			author: profileConfig.name,
+			url: Astro.url,
+			image: url(profileConfig.avatar)
+		}}>
+			{
+				"@context": "https://schema.org",
+				"@type": "WebSite",
+				"name": title,
+				"description": description,
+				"author": {
+					"@type": "Person",
+					"name": author,
+					"image": image
+				},
+				"url": url
+			}
+		</script>
 	</head>
-	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
+	<body class=" min-h-screen " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
 	>
 		<ConfigCarrier></ConfigCarrier>
 		<InstallPrompt></InstallPrompt>
+		<a href="#swup-container" class="sr-only focus:not-sr-only absolute z-[100] bg-[var(--primary)] text-white px-4 py-2 m-2 rounded-lg">
+			跳过导航内容
+		</a>
 		<slot />
 	</body>
 </html>
 
 <style is:global define:vars={{
 	bannerOffset,
-	'banner-height-home': `${BANNER_HEIGHT_HOME}vh`,
-	'banner-height': `${BANNER_HEIGHT}vh`,
+	'banner-height-home': `${BANNER_HEIGHT_HOME}dvh`,
+	'banner-height': `${BANNER_HEIGHT}dvh`,
 }}>
 @tailwind components;
 @layer components {
