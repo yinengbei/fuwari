@@ -10,7 +10,7 @@ import { LinkPreset } from "./types/config";
 export const siteConfig: SiteConfig = {
 	title: "提瓦特博客",
 	subtitle: "Tech otakus save the world",
-	lang: "zh_CN",
+	lang: "zh-CN",
 	themeColor: {
 		hue: 250,
 		fixed: true,

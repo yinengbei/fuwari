@@ -37,6 +37,6 @@ export async function GET(context: APIContext) {
 				}),
 			};
 		}),
-		customData: `<language>${siteConfig.lang}</language>`,
+		customData: "<language>zh-CN</language>",
 	});
 }

@@ -1,6 +1,4 @@
 <script lang="ts">
-import I18nKey from "@i18n/i18nKey";
-import { i18n } from "@i18n/translation";
 import Icon from "@iconify/svelte";
 import { url } from "@utils/url-utils.ts";
 import { onMount } from "svelte";
@@ -139,15 +137,15 @@ $: if (initialized && keywordMobile) {
       dark:bg-white/10 dark:hover:bg-white/15 dark:focus-within:bg-white/15
 ">
     <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/40 dark:text-white/40"></Icon>
-    <input placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
-           aria-label={i18n(I18nKey.search)}
+    <input placeholder="搜索" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
+           aria-label="搜索"
            class="transition-all pl-10 text-sm bg-transparent outline-0
          h-full w-40 active:w-60 focus:w-60 text-black/60 dark:text-white/60"
     >
 </div>
 
 <!-- toggle btn for phone/tablet view -->
-<button on:click={togglePanel} aria-label={i18n(I18nKey.search)} id="search-switch"
+<button on:click={togglePanel} aria-label="搜索" id="search-switch"
         class="btn-plain scale-animation lg:!hidden rounded-lg w-11 h-11 active:scale-90">
     <Icon icon="material-symbols:search" class="text-[1.25rem]"></Icon>
 </button>
@@ -162,8 +160,8 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
       dark:bg-white/10 dark:hover:bg-white/15 dark:focus-within:bg-white/15
   ">
         <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/40 dark:text-white/40"></Icon>
-        <input placeholder={i18n(I18nKey.search)} bind:value={keywordMobile}
-               aria-label={i18n(I18nKey.search)}
+        <input placeholder="搜索" bind:value={keywordMobile}
+               aria-label="搜索"
                class="pl-10 absolute inset-0 text-sm bg-transparent outline-0
                focus:w-60 text-black/60 dark:text-white/60"
         >
