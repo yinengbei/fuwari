@@ -60,7 +60,7 @@ export const navBarConfig: NavBarConfig = {
 
 export const profileConfig: ProfileConfig = {
 	avatar:
-		"https://imoss.tiwat.cn/2025/12/13/b_15313f6eacd791534499363de72c30ea.webp_t", 
+		"https://imoss.tiwat.cn/2025/12/13/b_15313f6eacd791534499363de72c30ea.webp_t", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "依依Yiyi",
 	bio: "Tech otakus save the world",
 	links: [
