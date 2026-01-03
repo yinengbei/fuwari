@@ -6,8 +6,11 @@
         @apply py-1 px-2 h-4;
         .os-scrollbar-track .os-scrollbar-handle {
             @apply rounded-full h-1;
-            transition: background-color 0.15s ease, transform 0.15s ease !important;
+            transition-property: transform !important;
+            transition-timing-function: ease !important;
+            transition-duration: 0.15s !important;
             transform-origin: center;
+            will-change: transform;
         }
         &:hover .os-scrollbar-track .os-scrollbar-handle {
             transform: scaleY(2);
@@ -18,8 +21,11 @@
         @apply px-1 py-1 w-4;
         .os-scrollbar-track .os-scrollbar-handle {
             @apply rounded-full w-1;
-            transition: background-color 0.15s ease, transform 0.15s ease !important;
+            transition-property: transform !important;
+            transition-timing-function: ease !important;
+            transition-duration: 0.15s !important;
             transform-origin: center;
+            will-change: transform;
         }
         &:hover .os-scrollbar-track .os-scrollbar-handle {
             transform: scaleX(2);
