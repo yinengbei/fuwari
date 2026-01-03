@@ -78,19 +78,19 @@
     }
 
     .text-90 {
-        @apply text-black/90 dark:text-white/90
+        @apply text-black
     }
     .text-75 {
-        @apply text-black/85 dark:text-white/85
+        @apply text-black/80
     }
     .text-50 {
-        @apply text-black/60 dark:text-white/60
+        @apply text-black/65
     }
     .text-30 {
-        @apply text-black/45 dark:text-white/45
+        @apply text-black/45
     }
     .text-25 {
-        @apply text-black/25 dark:text-white/25
+        @apply text-black/35
     }
 
     .meta-icon {
