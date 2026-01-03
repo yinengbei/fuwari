@@ -45,9 +45,6 @@
         }
         &.scale-animation {
             @apply expand-animation;
-            &.current-theme-btn {
-                @apply before:scale-100 before:opacity-100 before:bg-[var(--btn-plain-bg-hover)] text-[var(--primary)]
-            }
         }
     }
     .btn-regular {
