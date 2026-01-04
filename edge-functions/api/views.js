@@ -13,20 +13,7 @@ export async function onRequest({ request }) {
 	const referer = request.headers.get("referer") || "";
 	const viewKey = `view_${id}`;
 
-	if (!referer.startsWith("https://tiwat.cn")) {
-		let count = 0;
-		try {
-			const v = await blog.get(viewKey);
-			count = Number(v) || 0;
-		} catch (e) {
-			console.error("[KV] get viewKey failed:", e);
-			count = 0;
-		}
-		return new Response(JSON.stringify({ visitCount: count }), {
-			headers: { "content-type": "application/json" },
-		});
-	}
-
+	// Get current count
 	let count = 0;
 	try {
 		const v = await blog.get(viewKey);
@@ -34,6 +21,13 @@ export async function onRequest({ request }) {
 	} catch (e) {
 		console.error("[KV] get viewKey failed:", e);
 		count = 0;
+	}
+
+	// If referer is not from the site, return count without incrementing
+	if (!referer.startsWith("https://tiwat.cn")) {
+		return new Response(JSON.stringify({ visitCount: count }), {
+			headers: { "content-type": "application/json" },
+		});
 	}
 
 	if (action === "increment") {

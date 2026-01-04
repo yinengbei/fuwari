@@ -1,7 +1,7 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
-// // Retrieve posts and sort them by publication date
+// Retrieve posts and sort them by publication date
 async function getRawSortedPosts() {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;

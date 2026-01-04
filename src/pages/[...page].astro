@@ -15,7 +15,6 @@ export const getStaticPaths = (async ({ paginate }) => {
 // https://github.com/withastro/astro/issues/6507#issuecomment-1489916992
 
 const { page } = Astro.props;
-const len = page.data.length;
 const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 ---
 
@@ -27,5 +26,5 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
         <h1 class="sr-only">第 {page.currentPage} 页 - {siteConfig.title}</h1>
     )}
     <PostPage page={page}></PostPage>
-    <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`}></Pagination>
+    <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${page.data.length * 50}ms)`}></Pagination>
 </MainGridLayout>
