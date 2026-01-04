@@ -6,6 +6,7 @@ import "../styles/fonts.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import InstallPrompt from "@components/misc/InstallPrompt.astro";
+import LoadingSpinner from "@components/misc/LoadingSpinner.astro";
 import { profileConfig, siteConfig } from "@/config";
 import {
 	BANNER_HEIGHT,
@@ -226,9 +227,10 @@ const bannerOffset =
 			}
 		</script>
 	</head>
-	<body class=" min-h-screen " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
+	<body class=" min-h-screen " class:list={[{"is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
 	>
+		<LoadingSpinner />
 		<ConfigCarrier></ConfigCarrier>
 		<InstallPrompt></InstallPrompt>
 		<a href="#swup-container" class="sr-only focus:not-sr-only absolute z-[100] bg-[var(--primary)] text-white px-4 py-2 m-2 rounded-lg">
@@ -268,7 +270,7 @@ const bannerOffset =
 		@apply top-[calc(1rem_-_var(--banner-height-extend))]
 	}
 	.navbar-hidden {
-		@apply opacity-0 -translate-y-16
+		@apply opacity-0 -translate-y-16 pointer-events-none invisible
 	}
 }
 </style>
@@ -461,29 +463,43 @@ const setup = () => {
 			sidebar.style.display = 'none';
 		}
 
-		// Use setTimeout for non-critical DOM updates to avoid blocking
 		setTimeout(() => {
 			if (!bannerEnabled) {
 				return
 			}
-			const threshold = window.innerHeight * (BANNER_HEIGHT / 100) - 72 - 16
+			const isHome = document.body.classList.contains('is-home');
+			const currentBannerHeight = isHome ? BANNER_HEIGHT_HOME : BANNER_HEIGHT;
+			const NAVBAR_HEIGHT = 72;
+			const MAIN_PANEL_EXCESS_HEIGHT = MAIN_PANEL_OVERLAPS_BANNER_HEIGHT * 16;
+			const threshold = window.innerHeight * (currentBannerHeight / 100) - NAVBAR_HEIGHT - MAIN_PANEL_EXCESS_HEIGHT - 16;
+			
 			const navbar = document.getElementById('navbar-wrapper')
-			if (!navbar || !document.body.classList.contains('lg:is-home')) {
+			if (!navbar) {
 				return
 			}
 			const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
 			if (scrollTop >= threshold) {
 				navbar.classList.add('navbar-hidden')
+			} else {
+				navbar.classList.remove('navbar-hidden')
 			}
 		}, 0);
 	})
-	window.swup.hooks.on('content:replace', () => {
+	window.swup.hooks.on('content:replace', (visit: any) => {
 		// Re-initialize cached elements after content replacement
 		initScrollElements();
 		
 		const sidebar = document.getElementById('sidebar');
 		if (sidebar && window.innerWidth < 1024) {
 			sidebar.style.display = 'none';
+		}
+
+		// Update body class based on target page
+		const bodyElement = document.querySelector('body')
+		if (pathsEqual(visit.to.url, url('/'))) {
+			bodyElement!.classList.add('is-home');
+		} else {
+			bodyElement!.classList.remove('is-home');
 		}
 		
 		// Delay scrollbar re-initialization to avoid blocking
@@ -544,28 +560,11 @@ const setup = () => {
 			window.scrollTo({ top: 0, behavior: 'auto' });
 		}
 
-		// Use setTimeout for non-critical DOM updates
+		// Hide TOC during transition to avoid flashing old content
 		setTimeout(() => {
-			const bodyElement = document.querySelector('body')
-			if (pathsEqual(visit.to.url, url('/'))) {
-				bodyElement!.classList.add('lg:is-home');
-			} else {
-				bodyElement!.classList.remove('lg:is-home');
-			}
-
 			const tocElement = document.getElementById('toc-wrapper');
 			if (tocElement) {
 				tocElement.classList.add('toc-not-ready')
-			}
-		}, 0);
-	});
-	
-	window.swup.hooks.on('animation:out:end', () => {
-		// Use setTimeout for non-critical updates
-		setTimeout(() => {
-			const tocElement = document.getElementById('toc-wrapper');
-			if (tocElement) {
-				tocElement.classList.remove('toc-not-ready')
 			}
 		}, 0);
 	});
@@ -574,6 +573,12 @@ const setup = () => {
 		const sidebar = document.getElementById('sidebar');
 		if (sidebar && window.innerWidth < 1024) {
 			sidebar.style.display = '';
+		}
+
+		// Show TOC after new content is ready and animation finished
+		const tocElement = document.getElementById('toc-wrapper');
+		if (tocElement) {
+			tocElement.classList.remove('toc-not-ready')
 		}
 	});
 	
@@ -634,7 +639,7 @@ function scrollFunction() {
 		const innerWidth = window.innerWidth;
 
 		const bannerHeight = innerHeight * (BANNER_HEIGHT / 100);
-		const isHome = bodyElement?.classList.contains('lg:is-home') && innerWidth >= 1024;
+		const isHome = bodyElement?.classList.contains('is-home') && innerWidth >= 1024;
 
 		// Only update if scroll position changed significantly or state changed
 		const scrollDelta = Math.abs(scrollTop - lastScrollTop);

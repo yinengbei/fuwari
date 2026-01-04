@@ -1,7 +1,7 @@
 /* Page transition animations with Swup */
 html.is-changing .transition-swup-fade {
     transition-property: opacity, transform;
-    transition-duration: 250ms;
+    transition-duration: 200ms;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     will-change: opacity, transform;
     transform: translateZ(0);
@@ -10,7 +10,7 @@ html.is-changing .transition-swup-fade {
 }
 html.is-animating .transition-swup-fade {
     opacity: 0;
-    transform: translate3d(0, 0.75rem, 0);
+    transform: translate3d(0, 0.5rem, 0);
 }
 html:not(.is-changing):not(.is-animating) .transition-swup-fade {
     will-change: auto;
@@ -46,12 +46,19 @@ html:not(.is-changing):not(.is-animating) .transition-swup-fade {
 /* Main components */
 .onload-animation {
     opacity: 0;
-    animation: 250ms fade-in-up cubic-bezier(0.4, 0, 0.2, 1);
+    animation: 200ms fade-in-up cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
     will-change: opacity, transform;
     transform: translateZ(0);
     backface-visibility: hidden;
 }
+
+/* Skip content animation during swup transitions to avoid double fade */
+html.is-changing .onload-animation {
+    animation-duration: 0ms !important;
+    animation-delay: 0ms !important;
+}
+
 .onload-animation:not([style*="animation-delay"]) {
     animation-fill-mode: forwards;
 }
@@ -98,9 +105,9 @@ html:not(.is-changing):not(.is-animating) .animation-optimized {
 }
 
 #post-container :nth-child(1) { animation-delay: calc(var(--content-delay) + 0ms) }
-#post-container :nth-child(2) { animation-delay: calc(var(--content-delay) + 40ms) }
-#post-container :nth-child(3) { animation-delay: calc(var(--content-delay) + 80ms) }
-#post-container :nth-child(4) { animation-delay: calc(var(--content-delay) + 120ms) }
-#post-container :nth-child(5) { animation-delay: calc(var(--content-delay) + 160ms) }
-#post-container :nth-child(6) { animation-delay: calc(var(--content-delay) + 200ms) }
+#post-container :nth-child(2) { animation-delay: calc(var(--content-delay) + 30ms) }
+#post-container :nth-child(3) { animation-delay: calc(var(--content-delay) + 60ms) }
+#post-container :nth-child(4) { animation-delay: calc(var(--content-delay) + 90ms) }
+#post-container :nth-child(5) { animation-delay: calc(var(--content-delay) + 120ms) }
+#post-container :nth-child(6) { animation-delay: calc(var(--content-delay) + 150ms) }
 
