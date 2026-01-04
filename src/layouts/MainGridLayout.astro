@@ -53,8 +53,8 @@ const mainPanelTop = siteConfig.banner.enable
 
 {siteConfig.banner.enable && 
   <div id="banner-wrapper" 
-       class={`fixed lg:absolute z-10 w-full transition duration-700 overflow-hidden gpu-accelerated`} 
-       style={`top: 0; left: 0; right: 0; will-change: transform;`}>
+       class={`absolute z-10 w-full transition duration-700 overflow-hidden gpu-accelerated`} 
+       style={`top: -${BANNER_HEIGHT_EXTEND}dvh; will-change: transform;`}>
     <ImageWrapper id="banner" 
                   alt="Banner image of the blog" 
                   class:list={["object-cover h-full transition duration-700 animation-optimized"]}
