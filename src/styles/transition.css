@@ -85,6 +85,13 @@ html.is-animating .animation-optimized {
 html:not(.is-changing):not(.is-animating) .animation-optimized {
     will-change: auto;
 }
+
+/* Animation delay variables for consistent timing */
+:root {
+    --animation-delay-increment-post-detail: 30ms;  /* For post detail page elements */
+    --animation-delay-increment-post-list: 50ms;    /* For post list cards */
+}
+
 #navbar {
     animation-delay: 0ms
 }
@@ -104,10 +111,28 @@ html:not(.is-changing):not(.is-animating) .animation-optimized {
     animation-delay: 250ms;
 }
 
-#post-container :nth-child(1) { animation-delay: calc(var(--content-delay) + 0ms) }
-#post-container :nth-child(2) { animation-delay: calc(var(--content-delay) + 30ms) }
-#post-container :nth-child(3) { animation-delay: calc(var(--content-delay) + 60ms) }
-#post-container :nth-child(4) { animation-delay: calc(var(--content-delay) + 90ms) }
-#post-container :nth-child(5) { animation-delay: calc(var(--content-delay) + 120ms) }
-#post-container :nth-child(6) { animation-delay: calc(var(--content-delay) + 150ms) }
+/* Post detail page: staggered animation for child elements (30ms increment) */
+#post-container :nth-child(1) { animation-delay: calc(var(--content-delay) + 0 * var(--animation-delay-increment-post-detail)) }
+#post-container :nth-child(2) { animation-delay: calc(var(--content-delay) + 1 * var(--animation-delay-increment-post-detail)) }
+#post-container :nth-child(3) { animation-delay: calc(var(--content-delay) + 2 * var(--animation-delay-increment-post-detail)) }
+#post-container :nth-child(4) { animation-delay: calc(var(--content-delay) + 3 * var(--animation-delay-increment-post-detail)) }
+#post-container :nth-child(5) { animation-delay: calc(var(--content-delay) + 4 * var(--animation-delay-increment-post-detail)) }
+#post-container :nth-child(6) { animation-delay: calc(var(--content-delay) + 5 * var(--animation-delay-increment-post-detail)) }
+
+/* Post list page: staggered animation for post cards (50ms increment) */
+.post-list-card:nth-child(1) { animation-delay: calc(var(--content-delay) + 0 * var(--animation-delay-increment-post-list)) }
+.post-list-card:nth-child(2) { animation-delay: calc(var(--content-delay) + 1 * var(--animation-delay-increment-post-list)) }
+.post-list-card:nth-child(3) { animation-delay: calc(var(--content-delay) + 2 * var(--animation-delay-increment-post-list)) }
+.post-list-card:nth-child(4) { animation-delay: calc(var(--content-delay) + 3 * var(--animation-delay-increment-post-list)) }
+.post-list-card:nth-child(5) { animation-delay: calc(var(--content-delay) + 4 * var(--animation-delay-increment-post-list)) }
+.post-list-card:nth-child(6) { animation-delay: calc(var(--content-delay) + 5 * var(--animation-delay-increment-post-list)) }
+.post-list-card:nth-child(7) { animation-delay: calc(var(--content-delay) + 6 * var(--animation-delay-increment-post-list)) }
+.post-list-card:nth-child(8) { animation-delay: calc(var(--content-delay) + 7 * var(--animation-delay-increment-post-list)) }
+.post-list-card:nth-child(9) { animation-delay: calc(var(--content-delay) + 8 * var(--animation-delay-increment-post-list)) }
+.post-list-card:nth-child(10) { animation-delay: calc(var(--content-delay) + 9 * var(--animation-delay-increment-post-list)) }
+
+/* Pagination appears after all post cards */
+.post-list-pagination {
+    animation-delay: calc(var(--content-delay) + 10 * var(--animation-delay-increment-post-list));
+}
 

@@ -4,9 +4,6 @@ import { getPostUrlBySlug } from "@utils/url-utils";
 import PostCard from "./PostCard.astro";
 
 const { page } = Astro.props;
-
-let delay = 0;
-const interval = 50;
 ---
 <div class="transition flex flex-col gap-3 md:gap-4 mb-4">
     {page.data.map((entry: CollectionEntry<"posts">, index: number) => (
@@ -21,8 +18,7 @@ const interval = 50;
                 image={entry.data.image}
                 description={entry.data.description}
                 draft={entry.data.draft}
-                class:list={"onload-animation"}
-                style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
+                class:list={"onload-animation post-list-card"}
                 loading={index < 3 ? "eager" : "lazy"}
                 preload={index === 0}
         ></PostCard>
