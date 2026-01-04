@@ -4,7 +4,7 @@ export async function onRequestGet(context) {
 
 	const LSKY_API_URL = "https://im.tiwat.cn/api/v1/albums/6/random-image";
 	const FALLBACK_IMAGE =
-		"https://imos1s.tiwat.cn/2025/12/14/f865399ae020306c54e0063e554bbca2259895991.png_b";
+		"https://imoss.tiwat.cn/2025/12/14/f865399ae020306c54e0063e554bbca2259895991.png_b";
 
 	const noCacheHeaders = {
 		"Cache-Control": "no-store, no-cache, must-revalidate",
