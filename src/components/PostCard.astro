@@ -130,7 +130,12 @@ const { remarkPluginFrontmatter } = await entry.render();
         if (!countSpan || !postUrl) return;
         
         fetch(`/api/views?id=${encodeURIComponent(postUrl)}&action=get`)
-          .then(res => res.json())
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
           .then(data => {
             if (typeof data.visitCount === 'number') {
               countSpan.textContent = data.visitCount.toLocaleString();
@@ -145,10 +150,38 @@ const { remarkPluginFrontmatter } = await entry.render();
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updatePostCardViews);
-  } else {
-    updatePostCardViews();
+  if (typeof window !== 'undefined') {
+    if (!(window as any).__postCardViewsInitialized) {
+      (window as any).__postCardViewsInitialized = true;
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updatePostCardViews, { once: true });
+      } else {
+        updatePostCardViews();
+      }
+    }
+
+    const setupSwupHandler = () => {
+      if (window.swup?.hooks && !(window as any).__postCardViewsSwupHandlerRegistered) {
+        (window as any).__postCardViewsSwupHandlerRegistered = true;
+        
+        window.swup.hooks.on('content:replace', () => {
+          const containers = document.querySelectorAll('.post-card-views-container[data-post-url]');
+          containers.forEach((container) => {
+            if (container instanceof HTMLElement) {
+              delete container.dataset.fetched;
+            }
+          });
+          setTimeout(updatePostCardViews, 0);
+        });
+      }
+    };
+
+    if (window.swup?.hooks) {
+      setupSwupHandler();
+    } else {
+      document.addEventListener('swup:enable', setupSwupHandler, { once: true });
+    }
   }
 </script>
 
