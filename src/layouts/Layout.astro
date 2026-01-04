@@ -454,6 +454,38 @@ function init() {
 /* Load settings when entering the site */
 init();
 
+// Update navbar active state based on current URL
+function updateNavbarActiveState(currentUrl: string) {
+	// Get the pathname from the URL
+	const urlObj = new URL(currentUrl, window.location.origin);
+	const currentPath = urlObj.pathname;
+	
+	// Update desktop navbar links
+	const navbarLinks = document.querySelectorAll('.navbar-link[data-navlink-url]');
+	navbarLinks.forEach((link) => {
+		const linkUrl = link.getAttribute('data-navlink-url');
+		if (linkUrl && pathsEqual(currentPath, linkUrl)) {
+			link.classList.add('active');
+		} else {
+			link.classList.remove('active');
+		}
+	});
+	
+	// Update mobile nav menu links
+	const menuLinks = document.querySelectorAll('.nav-menu-link[data-navlink-url]');
+	menuLinks.forEach((link) => {
+		const linkUrl = link.getAttribute('data-navlink-url');
+		if (linkUrl && pathsEqual(currentPath, linkUrl)) {
+			link.classList.add('active');
+		} else {
+			link.classList.remove('active');
+		}
+	});
+}
+
+// Initialize navbar active state on page load
+updateNavbarActiveState(window.location.href);
+
 const setup = () => {
 	window.swup.hooks.on('link:click', () => {
 		document.documentElement.style.setProperty('--content-delay', '0ms')
@@ -501,6 +533,9 @@ const setup = () => {
 		} else {
 			bodyElement!.classList.remove('is-home');
 		}
+		
+		// Update navbar active state
+		updateNavbarActiveState(visit.to.url);
 		
 		// Delay scrollbar re-initialization to avoid blocking
 		if ('requestIdleCallback' in window) {
