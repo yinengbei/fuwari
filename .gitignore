@@ -37,7 +37,5 @@ yarn.lock
 !.edgeone/project.json
 .tef_dist/*
 
-.obsidian
-.git
-.edgeone
+
   

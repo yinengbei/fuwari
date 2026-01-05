@@ -39,32 +39,6 @@ function formatTag(tagList: string[]) {
 	return tagList.map((t) => `#${t}`).join(" ");
 }
 
-// Helper function to ensure type safety in templates
-function getGroupYear(group: unknown): number {
-	return (group as Group).year;
-}
-
-function getGroupPosts(group: unknown): Post[] {
-	return (group as Group).posts;
-}
-
-// Helper functions to ensure type safety for posts in templates
-function getPostSlug(post: unknown): string {
-	return (post as Post).slug;
-}
-
-function getPostTitle(post: unknown): string {
-	return (post as Post).data.title;
-}
-
-function getPostPublished(post: unknown): Date {
-	return (post as Post).data.published;
-}
-
-function getPostTags(post: unknown): string[] {
-	return (post as Post).data.tags;
-}
-
 onMount(async () => {
 	let filteredPosts: Post[] = sortedPosts;
 
@@ -98,26 +72,23 @@ onMount(async () => {
 		{} as Record<number, Post[]>,
 	);
 
-	const groupedPostsArray = Object.keys(grouped).map((yearStr): Group => {
-		const year = Number.parseInt(yearStr, 10);
-		return {
-			year,
-			posts: grouped[year] ?? [],
-		};
-	});
+	const groupedPostsArray = Object.keys(grouped).map((yearStr) => ({
+		year: Number.parseInt(yearStr, 10),
+		posts: grouped[Number.parseInt(yearStr, 10)],
+	}));
 
 	groupedPostsArray.sort((a, b) => b.year - a.year);
 
-	groups = groupedPostsArray as Group[];
+	groups = groupedPostsArray;
 });
 </script>
 
 <div class="card-base px-8 py-6">
-    {#each groups as group (getGroupYear(group))}
+    {#each groups as group}
         <div>
             <div class="flex flex-row w-full items-center h-[3.75rem]">
                 <div class="w-[15%] md:w-[10%] transition text-2xl font-bold text-right text-75">
-                    {getGroupYear(group)}
+                    {group.year}
                 </div>
                 <div class="w-[15%] md:w-[10%]">
                     <div
@@ -126,20 +97,20 @@ onMount(async () => {
                     ></div>
                 </div>
                 <div class="w-[70%] md:w-[80%] transition text-left text-50">
-                    {getGroupPosts(group).length} 篇文章
+                    {group.posts.length} 篇文章
                 </div>
             </div>
 
-            {#each getGroupPosts(group) as post (getPostSlug(post))}
+            {#each group.posts as post}
                 <a
-                        href={getPostUrlBySlug(getPostSlug(post))}
-                        aria-label={getPostTitle(post)}
+                        href={getPostUrlBySlug(post.slug)}
+                        aria-label={post.data.title}
                         class="group btn-plain !block h-10 w-full rounded-lg hover:text-[initial]"
                 >
                     <div class="flex flex-row justify-start items-center h-full">
                         <!-- date -->
                         <div class="w-[15%] md:w-[10%] transition text-sm text-right text-50">
-                            {formatDate(getPostPublished(post))}
+                            {formatDate(post.data.published)}
                         </div>
 
                         <!-- dot and line -->
@@ -160,7 +131,7 @@ onMount(async () => {
                      group-hover:translate-x-1 transition-all group-hover:text-[var(--primary)]
                      text-75 pr-8 whitespace-nowrap overflow-ellipsis overflow-hidden"
                         >
-                            {getPostTitle(post)}
+                            {post.data.title}
                         </div>
 
                         <!-- tag list -->
@@ -168,7 +139,7 @@ onMount(async () => {
                                 class="hidden md:block md:w-[15%] text-left text-sm transition
                      whitespace-nowrap overflow-ellipsis overflow-hidden text-30"
                         >
-                            {formatTag(getPostTags(post))}
+                            {formatTag(post.data.tags)}
                         </div>
                     </div>
                 </a>
