@@ -1,5 +1,4 @@
-export async function onRequest(context) {
-	const { request, env } = context;
+export async function onRequest({ request }) {
 	const url = new URL(request.url);
 	const id = url.searchParams.get("id");
 	const action = url.searchParams.get("action") || "increment";
@@ -14,14 +13,11 @@ export async function onRequest(context) {
 	const referer = request.headers.get("referer") || "";
 	const viewKey = `view_${id}`;
 
-	// Get current count from KV via context.env
+	// Get current count
 	let count = 0;
 	try {
-		// Assuming 'blog' is the KV namespace binding
-		if (env.blog) {
-			const v = await env.blog.get(viewKey);
-			count = Number(v) || 0;
-		}
+		const v = await blog.get(viewKey);
+		count = Number(v) || 0;
 	} catch (e) {
 		console.error("[KV] get viewKey failed:", e);
 		count = 0;
@@ -37,9 +33,7 @@ export async function onRequest(context) {
 	if (action === "increment") {
 		try {
 			count += 1;
-			if (env.blog) {
-				await env.blog.put(viewKey, String(count));
-			}
+			await blog.put(viewKey, String(count));
 		} catch (e) {
 			console.error("[KV] update viewKey failed:", e);
 		}
