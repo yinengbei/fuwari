@@ -29,10 +29,13 @@ yarn.lock
 # ide
 .idea
 *.iml
+.cursor
 
 # Tencent Cloud EdgeOne
 .env
 .edgeone/*
 !.edgeone/project.json
 .tef_dist/*
+
+
   

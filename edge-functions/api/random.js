@@ -1,5 +1,11 @@
-export async function onRequestGet(context) {
-	const { env } = context;
+export async function onRequest(context) {
+	const { request, env } = context;
+	
+	// Only allow GET requests
+	if (request.method !== "GET") {
+		return new Response("Method Not Allowed", { status: 405 });
+	}
+
 	const API_TOKEN = env.LSKY_TOKEN;
 
 	const LSKY_API_URL = "https://im.tiwat.cn/api/v1/albums/6/random-image";
