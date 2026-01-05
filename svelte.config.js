@@ -1,5 +1,4 @@
-import { vitePreprocess } from "@astrojs/svelte";
-
 export default {
-  preprocess: [vitePreprocess({ script: true })],
+	// Svelte 5 with Vite (used by Astro) has built-in TypeScript support
+	// No preprocessor needed
 };

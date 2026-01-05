@@ -75,11 +75,9 @@ function extractRepoInfo(
 }
 
 function getGitHubToken(): string | undefined {
-	return (
-		import.meta.env.GITHUB_TOKEN ||
-		import.meta.env.GH_TOKEN ||
-		import.meta.env.GITHUB_PERSONAL_ACCESS_TOKEN
-	);
+	// @ts-expect-error - import.meta.env type definition issue
+	const env = import.meta.env as Record<string, string | undefined>;
+	return env.GITHUB_TOKEN || env.GH_TOKEN || env.GITHUB_PERSONAL_ACCESS_TOKEN;
 }
 
 async function getChangelogList(config: ChangelogConfig): Promise<Commit[]> {
