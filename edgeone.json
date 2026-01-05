@@ -8,19 +8,9 @@
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
-    },
-    {
-      "source": "/_astro/*",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
     }
   ],
   "caches": [
-    {
-      "source": "/_astro/*",
-      "cacheTtl": 31536000
-    },
     {
       "source": "/favicon/*",
       "cacheTtl": 604800
