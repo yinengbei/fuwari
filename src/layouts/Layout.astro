@@ -280,7 +280,7 @@ import 'overlayscrollbars/overlayscrollbars.css';
 import {
 	OverlayScrollbars,
 } from 'overlayscrollbars';
-import {getHue, getStoredTheme, setHue, setTheme} from "../utils/setting-utils";
+import {getHue, setHue} from "../utils/setting-utils";
 import {pathsEqual, url} from "../utils/url-utils";
 import {
 	BANNER_HEIGHT,
@@ -311,11 +311,6 @@ setClickOutsideToClose("display-setting", ["display-setting", "display-settings-
 setClickOutsideToClose("nav-menu-panel", ["nav-menu-panel", "nav-menu-switch"])
 setClickOutsideToClose("search-panel", ["search-panel", "search-bar", "search-switch"])
 
-
-function loadTheme() {
-	const theme = getStoredTheme()
-	setTheme(theme)
-}
 
 function loadHue() {
 	setHue(getHue())
@@ -433,7 +428,6 @@ function cleanupAnimationWillChange() {
 }
 
 function init() {
-	loadTheme();
 	loadHue();
 	showBanner();
 	cleanupAnimationWillChange();

@@ -21,8 +21,6 @@ const { badge, url, label } = Astro.props;
             
             text-neutral-700
             hover:text-[var(--primary)]
-            dark:text-neutral-300
-            dark:hover:text-[var(--primary)]
         `
         }
     >
@@ -32,8 +30,8 @@ const { badge, url, label } = Astro.props;
             </div>
             { badge !== undefined && badge !== null && badge !== '' &&
                 <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
-                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
-                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    text-[var(--btn-content)]
+                    bg-[var(--btn-regular-bg)]
                     flex items-center justify-center">
                     { badge }
                 </div>

@@ -77,7 +77,7 @@
         transition-duration: 150ms;
     }
     .copy-btn .copy-icon {
-        @apply opacity-100 fill-white dark:fill-white/75;
+        @apply opacity-100 fill-white;
     }
     .copy-btn.success .copy-icon {
         @apply opacity-0 fill-[var(--deep-text)]

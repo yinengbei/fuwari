@@ -80,7 +80,7 @@ const imageStyle = `object-position: ${position}`;
 	<link rel="preload" as="image" href={preloadSrc} fetchpriority={fetchpriority} />
 )}
 <div id={id} class:list={[className, 'overflow-hidden relative']}>
-    <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
+    <div class="transition absolute inset-0 bg-opacity-50 pointer-events-none"></div>
     {isLocal && img && (
 		<Image 
 			src={img} 

@@ -134,13 +134,12 @@ $: if (initialized && keywordMobile) {
 <!-- search bar for desktop view -->
 <div id="search-bar" class="hidden lg:flex transition-all items-center h-11 mr-2 rounded-lg
       bg-black/[0.06] hover:bg-black/[0.1] focus-within:bg-black/[0.1]
-      dark:bg-white/10 dark:hover:bg-white/15 dark:focus-within:bg-white/15
 ">
-    <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/40 dark:text-white/40"></Icon>
+    <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/40"></Icon>
     <input placeholder="搜索" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
            aria-label="搜索"
            class="transition-all pl-10 text-sm bg-transparent outline-0
-         h-full w-40 active:w-60 focus:w-60 text-black/60 dark:text-white/60"
+         h-full w-40 active:w-60 focus:w-60 text-black/60"
     >
 </div>
 
@@ -157,13 +156,12 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
     <!-- search bar inside panel for phone/tablet -->
     <div id="search-bar-inside" class="flex relative lg:hidden transition-all items-center h-11 rounded-xl
       bg-black/[0.06] hover:bg-black/[0.1] focus-within:bg-black/[0.1]
-      dark:bg-white/10 dark:hover:bg-white/15 dark:focus-within:bg-white/15
   ">
-        <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/40 dark:text-white/40"></Icon>
+        <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/40"></Icon>
         <input placeholder="搜索" bind:value={keywordMobile}
                aria-label="搜索"
                class="pl-10 absolute inset-0 text-sm bg-transparent outline-0
-               focus:w-60 text-black/60 dark:text-white/60"
+               focus:w-60 text-black/60"
         >
     </div>
 

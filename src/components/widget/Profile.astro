@@ -20,9 +20,9 @@ const config = profileConfig;
         <ImageWrapper src={config.avatar || ""} alt="Profile Image of the Author" class="mx-auto lg:w-full h-full lg:mt-0 " loading="eager" fetchpriority="high" sizes="(max-width: 1024px) 12rem, 17.5rem"></ImageWrapper>
     </a>
     <div class="px-2">
-        <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50 transition">{config.name}</div>
+        <div class="font-bold text-xl text-center mb-1 transition">{config.name}</div>
         <div class="h-1 w-5 bg-[var(--primary)] mx-auto rounded-full mb-2 transition"></div>
-        <div class="text-center text-black/50 dark:text-white/50 mb-2.5 transition">{config.bio}</div>
+        <div class="text-center text-black/50 mb-2.5 transition">{config.bio}</div>
         
 		<TotalViews>
 		  <Icon
