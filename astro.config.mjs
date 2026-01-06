@@ -23,6 +23,18 @@ import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+
+let buildVersion = "";
+const versionFile = join(process.cwd(), ".version");
+if (existsSync(versionFile)) {
+	try {
+		buildVersion = readFileSync(versionFile, "utf-8").trim();
+	} catch (error) {
+		console.warn("无法读取版本号文件:", error);
+	}
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -155,6 +167,9 @@ export default defineConfig({
 		],
 	},
 	vite: {
+		define: {
+			"import.meta.env.BUILD_VERSION": JSON.stringify(buildVersion),
+		},
 		build: {
 			assetsInlineLimit: 10240, // 10KB
 			rollupOptions: {

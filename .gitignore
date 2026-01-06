@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# build version
+.version
+
 # generated types
 .astro/
 

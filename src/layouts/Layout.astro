@@ -17,6 +17,7 @@ import {
 import { defaultFavicons } from "../constants/icon";
 import type { Favicon } from "../types/config";
 import { pathsEqual, url } from "../utils/url-utils";
+import { getBuildVersion, addVersionToUrl } from "../utils/version-utils";
 import "katex/dist/katex.css";
 
 interface Props {
@@ -64,6 +65,8 @@ const bannerOffsetByPosition = {
 };
 const bannerOffset =
 	bannerOffsetByPosition[siteConfig.banner.position || "center"];
+
+const buildVersion = getBuildVersion();
 ---
 
 <!DOCTYPE html>
@@ -107,19 +110,20 @@ const bannerOffset =
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 		<meta name="apple-mobile-web-app-title" content={siteConfig.title} />
+		{buildVersion && <meta name="build-version" content={buildVersion} />}
 		{favicons.map(favicon => (
 			<link rel="icon"
-				  href={favicon.src.startsWith('/') ? url(favicon.src) : favicon.src}
+				  href={favicon.src.startsWith('/') ? addVersionToUrl(url(favicon.src), buildVersion) : favicon.src}
 				  sizes={favicon.sizes || "any"}
 				  {...(favicon.theme ? { media: `(prefers-color-scheme: ${favicon.theme})` } : {})}
 			/>
 		))}
 		
 		<!-- PWA Manifest -->
-		<link rel="manifest" href={url('/manifest.json')} />
+		<link rel="manifest" href={addVersionToUrl(url('/manifest.json'), buildVersion)} />
 		
 		<!-- Apple Touch Icon -->
-		<link rel="apple-touch-icon" href={url('/favicon/favicon.png')} />
+		<link rel="apple-touch-icon" href={addVersionToUrl(url('/favicon/favicon.png'), buildVersion)} />
 
 		<style define:vars={{
 			configHue,
