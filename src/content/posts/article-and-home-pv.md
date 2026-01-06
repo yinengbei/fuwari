@@ -5,7 +5,7 @@ description: 此方案仅供参考
 image: ""
 tags:
   - edgeone
-  - 统计
+  - api
 category: Blog
 draft: false
 lang: ""
