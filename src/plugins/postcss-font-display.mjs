@@ -4,33 +4,32 @@
  */
 export default function fontDisplaySwap() {
 	return {
-		postcssPlugin: 'font-display-swap',
+		postcssPlugin: "font-display-swap",
 		AtRule: {
-			'font-face'(atRule) {
+			"font-face"(atRule) {
 				// Check if font-display is already set
 				const hasFontDisplay = atRule.nodes.some(
-					node => node.prop === 'font-display'
+					(node) => node.prop === "font-display",
 				);
-				
+
 				// Add font-display: swap if not present
 				if (!hasFontDisplay) {
 					atRule.append({
-						prop: 'font-display',
-						value: 'swap',
-						raws: { before: '\n  ' }
+						prop: "font-display",
+						value: "swap",
+						raws: { before: "\n  " },
 					});
 				} else {
 					// Update existing font-display to swap
-					atRule.nodes.forEach(node => {
-						if (node.prop === 'font-display' && node.value !== 'swap') {
-							node.value = 'swap';
+					atRule.nodes.forEach((node) => {
+						if (node.prop === "font-display" && node.value !== "swap") {
+							node.value = "swap";
 						}
 					});
 				}
-			}
-		}
+			},
+		},
 	};
 }
 
 fontDisplaySwap.postcss = true;
-

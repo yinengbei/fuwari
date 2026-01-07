@@ -4,7 +4,12 @@ import { Icon } from "astro-icon/components";
 import type { Friend } from "@/types/data";
 import { siteConfig } from "@/config";
 
-const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", { eager: true, import: "default" }));
+const friends = Object.values(
+	import.meta.glob<Friend>("@/data/friends/*.json", {
+		eager: true,
+		import: "default",
+	}),
+);
 ---
 
 <MainGridLayout title="友链">

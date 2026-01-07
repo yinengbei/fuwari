@@ -18,17 +18,17 @@ interface Props {
 import { Image, getImage } from "astro:assets";
 import { url } from "../../utils/url-utils";
 
-const { 
-	id, 
-	src, 
-	alt, 
-	position = "center", 
+const {
+	id,
+	src,
+	alt,
+	position = "center",
 	basePath = "/",
 	loading = "lazy",
 	fetchpriority = "auto",
 	preload = false,
 	widths = [640, 1024, 1920],
-	sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+	sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw",
 } = Astro.props;
 const className = Astro.props.class;
 
@@ -60,10 +60,13 @@ if (isLocal) {
 		);
 	} else {
 		img = await file();
-		
+
 		// Generate preload source for critical images
 		if (preload && img) {
-			const optimizedImg = await getImage({ src: img, width: widths[1] || 1024 });
+			const optimizedImg = await getImage({
+				src: img,
+				width: widths[1] || 1024,
+			});
 			preloadSrc = optimizedImg.src;
 		}
 	}
