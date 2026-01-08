@@ -1,25 +1,24 @@
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import 'photoswipe/style.css';
 
-// 初始化 PhotoSwipe
+let isInitialized = false;
+
 function initBannerPhotoSwipe() {
     const viewBannerBtn = document.getElementById('view-banner-btn');
     const bannerWrapper = document.getElementById('banner-wrapper');
     
-    if (!viewBannerBtn || !bannerWrapper) return;
+    if (!viewBannerBtn || !bannerWrapper) {
+        isInitialized = false;
+        return;
+    }
     
-    // 移除旧的事件监听器（如果有的话）
-    const newBtn = viewBannerBtn.cloneNode(true) as HTMLButtonElement;
-    viewBannerBtn.parentNode?.replaceChild(newBtn, viewBannerBtn);
+    if (isInitialized) return;
     
-    // 获取 banner 图片的 src
     const bannerImg = bannerWrapper.querySelector('img');
     if (!bannerImg) return;
     
-    const bannerSrc = bannerImg.src;
-    
-    newBtn.addEventListener('click', () => {
-        // 创建临时的图片元素来获取原始尺寸
+    const handleClick = () => {
+        const bannerSrc = bannerImg.src;
         const tempImg = new Image();
         
         tempImg.onerror = () => {
@@ -58,16 +57,20 @@ function initBannerPhotoSwipe() {
         };
         
         tempImg.src = bannerSrc;
-    });
+    };
+    
+    viewBannerBtn.addEventListener('click', handleClick);
+    isInitialized = true;
 }
 
-// 页面加载时初始化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initBannerPhotoSwipe);
 } else {
     initBannerPhotoSwipe();
 }
 
-// 支持 Swup 页面切换
-document.addEventListener('swup:contentReplaced', initBannerPhotoSwipe);
+document.addEventListener('swup:contentReplaced', () => {
+    isInitialized = false;
+    initBannerPhotoSwipe();
+});
 
