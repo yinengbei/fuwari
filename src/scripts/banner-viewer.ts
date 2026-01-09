@@ -3,8 +3,6 @@ import 'photoswipe/style.css';
 
 let isInitialized = false;
 let cachedBannerSrc: string | null = null;
-let cachedImageWidth: number | null = null;
-let cachedImageHeight: number | null = null;
 let lightboxInstance: PhotoSwipeLightbox | null = null;
 
 function cleanup() {
@@ -14,8 +12,6 @@ function cleanup() {
     }
     isInitialized = false;
     cachedBannerSrc = null;
-    cachedImageWidth = null;
-    cachedImageHeight = null;
 }
 
 function initBannerPhotoSwipe() {
@@ -32,21 +28,17 @@ function initBannerPhotoSwipe() {
     const bannerImg = bannerWrapper.querySelector('img') as HTMLImageElement;
     if (!bannerImg) return;
     
-    const cacheImageData = () => {
+    const cacheBannerSrc = () => {
         if (bannerImg.complete && bannerImg.naturalWidth > 0) {
             cachedBannerSrc = bannerImg.currentSrc || bannerImg.src;
-            cachedImageWidth = bannerImg.naturalWidth;
-            cachedImageHeight = bannerImg.naturalHeight;
         } else {
             bannerImg.addEventListener('load', () => {
                 cachedBannerSrc = bannerImg.currentSrc || bannerImg.src;
-                cachedImageWidth = bannerImg.naturalWidth;
-                cachedImageHeight = bannerImg.naturalHeight;
             }, { once: true });
         }
     };
     
-    cacheImageData();
+    cacheBannerSrc();
     
     lightboxInstance = new PhotoSwipeLightbox({
         dataSource: [],
@@ -69,14 +61,10 @@ function initBannerPhotoSwipe() {
         if (!lightboxInstance) return;
         
         const bannerSrc = cachedBannerSrc || bannerImg.currentSrc || bannerImg.src;
-        const width = cachedImageWidth || bannerImg.naturalWidth || 1920;
-        const height = cachedImageHeight || bannerImg.naturalHeight || 1080;
         
         lightboxInstance.options.dataSource = [
             {
                 src: bannerSrc,
-                width: width,
-                height: height,
                 alt: 'Banner 原图'
             }
         ];
