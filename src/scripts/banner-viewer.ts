@@ -2,101 +2,64 @@ import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import 'photoswipe/style.css';
 
 let isInitialized = false;
-let lightboxInstance: PhotoSwipeLightbox | null = null;
-let clickHandler: (() => void) | null = null;
-let viewBannerBtn: HTMLElement | null = null;
-
-function cleanup() {
-    if (viewBannerBtn && clickHandler) {
-        viewBannerBtn.removeEventListener('click', clickHandler);
-        clickHandler = null;
-    }
-    if (lightboxInstance) {
-        lightboxInstance.destroy();
-        lightboxInstance = null;
-    }
-    isInitialized = false;
-    viewBannerBtn = null;
-}
 
 function initBannerPhotoSwipe() {
-    const currentViewBannerBtn = document.getElementById('view-banner-btn');
+    const viewBannerBtn = document.getElementById('view-banner-btn');
     const bannerWrapper = document.getElementById('banner-wrapper');
     
-    if (!currentViewBannerBtn || !bannerWrapper) {
-        cleanup();
+    if (!viewBannerBtn || !bannerWrapper) {
+        isInitialized = false;
         return;
     }
     
-    if (isInitialized && viewBannerBtn === currentViewBannerBtn) return;
+    if (isInitialized) return;
     
-    cleanup();
-    
-    const bannerImg = bannerWrapper.querySelector('img') as HTMLImageElement;
+    const bannerImg = bannerWrapper.querySelector('img');
     if (!bannerImg) return;
     
-    lightboxInstance = new PhotoSwipeLightbox({
-        dataSource: [],
-        pswpModule: () => import('photoswipe'),
-        bgOpacity: 0.95,
-        showHideAnimationType: 'zoom',
-        initialZoomLevel: 'fit',
-        secondaryZoomLevel: 1.5,
-        maxZoomLevel: 4,
-        spacing: 0.1,
-        allowPanToNext: false,
-        closeOnVerticalDrag: true,
-        pinchToClose: true,
-        clickToCloseNonZoomable: true,
-    });
-    
-    lightboxInstance.addFilter('domItemData', (itemData, element) => {
-        if (element instanceof HTMLImageElement) {
-            itemData.src = element.currentSrc || element.src;
-            itemData.w = element.naturalWidth || window.innerWidth;
-            itemData.h = element.naturalHeight || window.innerHeight;
-            itemData.msrc = element.currentSrc || element.src;
-        }
-        return itemData;
-    });
-    
-    lightboxInstance.init();
-    
-    clickHandler = () => {
-        if (!lightboxInstance) return;
+    const handleClick = () => {
+        const bannerSrc = bannerImg.src;
+        const tempImg = new Image();
         
-        const currentBannerWrapper = document.getElementById('banner-wrapper');
-        if (!currentBannerWrapper) return;
+        tempImg.onerror = () => {
+            console.error('无法加载图片');
+        };
         
-        const currentBannerImg = currentBannerWrapper.querySelector('img') as HTMLImageElement;
-        if (!currentBannerImg) return;
+        tempImg.onload = () => {
+            try {
+                const lightbox = new PhotoSwipeLightbox({
+                    dataSource: [
+                        {
+                            src: bannerSrc,
+                            width: tempImg.naturalWidth || 1920,
+                            height: tempImg.naturalHeight || 1080,
+                            alt: 'Banner 原图'
+                        }
+                    ],
+                    pswpModule: () => import('photoswipe'),
+                    bgOpacity: 0.95,
+                    showHideAnimationType: 'zoom',
+                    initialZoomLevel: 'fit',
+                    secondaryZoomLevel: 1.5,
+                    maxZoomLevel: 4,
+                    spacing: 0.1,
+                    allowPanToNext: false,
+                    closeOnVerticalDrag: true,
+                    pinchToClose: true,
+                    clickToCloseNonZoomable: true,
+                });
+                
+                lightbox.init();
+                lightbox.loadAndOpen(0);
+            } catch (error) {
+                console.error('PhotoSwipe 初始化失败:', error);
+            }
+        };
         
-        const bannerSrc = currentBannerImg.currentSrc || currentBannerImg.src;
-        if (!bannerSrc) return;
-        
-        const width = currentBannerImg.naturalWidth;
-        const height = currentBannerImg.naturalHeight;
-        
-        if (width === 0 || height === 0) return;
-        
-        try {
-            lightboxInstance.options.dataSource = [
-                {
-                    src: bannerSrc,
-                    w: width,
-                    h: height,
-                    msrc: bannerSrc,
-                }
-            ];
-            
-            lightboxInstance.loadAndOpen(0);
-        } catch (error) {
-            console.error('Failed to open PhotoSwipe:', error);
-        }
+        tempImg.src = bannerSrc;
     };
     
-    currentViewBannerBtn.addEventListener('click', clickHandler, { passive: true });
-    viewBannerBtn = currentViewBannerBtn;
+    viewBannerBtn.addEventListener('click', handleClick);
     isInitialized = true;
 }
 
@@ -107,7 +70,7 @@ if (document.readyState === 'loading') {
 }
 
 document.addEventListener('swup:contentReplaced', () => {
-    cleanup();
+    isInitialized = false;
     initBannerPhotoSwipe();
 });
 
