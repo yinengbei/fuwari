@@ -167,6 +167,11 @@ export default defineConfig({
 		],
 	},
 	vite: {
+		server: {
+			allowedHosts: [
+				'blog.22337788.xyz',
+			]
+		},
 		define: {
 			"import.meta.env.BUILD_VERSION": JSON.stringify(buildVersion),
 		},
